@@ -1,5 +1,7 @@
 # Superpowers
 
+Fork of [obra/superpowers](https://github.com/obra/superpowers) by Jesse Vincent, adapted to my needs.
+
 Superpowers is a complete software development workflow for your coding agents, built on top of a set of composable "skills" and some initial instructions that make sure your agent uses them.
 
 ## How it works
@@ -17,16 +19,22 @@ There's a bunch more to it, but that's the core of the system. And because the s
 
 ## Sponsorship
 
-If Superpowers has helped you do stuff that makes money and you are so inclined, I'd greatly appreciate it if you'd consider [sponsoring my opensource work](https://github.com/sponsors/obra).
-
-Thanks! 
-
-- Jesse
+If Superpowers has helped you do stuff that makes money and you are so inclined, consider [sponsoring the original author's opensource work](https://github.com/sponsors/obra).
 
 
 ## Installation
 
 **Note:** Installation differs by platform. Claude Code or Cursor have built-in plugin marketplaces. Codex and OpenCode require manual setup.
+
+### Installing this fork
+
+For Codex, OpenCode, and Gemini CLI, you can install directly from this fork:
+
+- **Codex**: `git clone https://github.com/tbelmega/superpowers.git ~/.codex/superpowers` (see [.codex/INSTALL.md](.codex/INSTALL.md))
+- **OpenCode**: Add `"plugin": ["superpowers@git+https://github.com/tbelmega/superpowers.git"]` to `opencode.json`
+- **Gemini CLI**: `gemini extensions install https://github.com/tbelmega/superpowers`
+
+The sections below describe the original obra/superpowers installation options.
 
 ### Claude Code Official Marketplace
 
@@ -67,7 +75,7 @@ or search for "superpowers" in the plugin marketplace.
 Tell Codex:
 
 ```
-Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md
+Fetch and follow instructions from https://raw.githubusercontent.com/tbelmega/superpowers/refs/heads/main/.codex/INSTALL.md
 ```
 
 **Detailed docs:** [docs/README.codex.md](docs/README.codex.md)
@@ -77,7 +85,7 @@ Fetch and follow instructions from https://raw.githubusercontent.com/obra/superp
 Tell OpenCode:
 
 ```
-Fetch and follow instructions from https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.opencode/INSTALL.md
+Fetch and follow instructions from https://raw.githubusercontent.com/tbelmega/superpowers/refs/heads/main/.opencode/INSTALL.md
 ```
 
 **Detailed docs:** [docs/README.opencode.md](docs/README.opencode.md)
@@ -85,7 +93,7 @@ Fetch and follow instructions from https://raw.githubusercontent.com/obra/superp
 ### Gemini CLI
 
 ```bash
-gemini extensions install https://github.com/obra/superpowers
+gemini extensions install https://github.com/tbelmega/superpowers
 ```
 
 To update:
@@ -176,12 +184,11 @@ MIT License - see LICENSE file for details
 
 ## Community
 
-Superpowers is built by [Jesse Vincent](https://blog.fsck.com) and the rest of the folks at [Prime Radiant](https://primeradiant.com).
+Superpowers was originally built by [Jesse Vincent](https://blog.fsck.com) and the folks at [Prime Radiant](https://primeradiant.com). This fork is maintained by Thiemo Belmega.
 
-For community support, questions, and sharing what you're building with Superpowers, join us on [Discord](https://discord.gg/Jd8Vphy9jq).
+For community support, questions, and sharing what you're building with Superpowers, join the [original project's Discord](https://discord.gg/Jd8Vphy9jq).
 
 ## Support
 
-- **Discord**: [Join us on Discord](https://discord.gg/Jd8Vphy9jq)
-- **Issues**: https://github.com/obra/superpowers/issues
-- **Marketplace**: https://github.com/obra/superpowers-marketplace
+- **Discord**: [Original project's Discord](https://discord.gg/Jd8Vphy9jq)
+- **Issues**: https://github.com/tbelmega/superpowers/issues
