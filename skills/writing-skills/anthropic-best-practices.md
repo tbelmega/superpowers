@@ -32,13 +32,14 @@ Only add context Claude doesn't already have. Challenge each piece of informatio
 ````markdown  theme={null}
 ## Extract PDF text
 
-Use pdfplumber for text extraction:
+Use pdf-parse for text extraction:
 
-```python
-import pdfplumber
+```typescript
+import pdf from 'pdf-parse';
+import { readFile } from 'fs/promises';
 
-with pdfplumber.open("file.pdf") as pdf:
-    text = pdf.pages[0].extract_text()
+const buffer = await readFile('file.pdf');
+const { text } = await pdf(buffer);
 ```
 ````
 
@@ -50,8 +51,8 @@ with pdfplumber.open("file.pdf") as pdf:
 PDF (Portable Document Format) files are a common file format that contains
 text, images, and other content. To extract text from a PDF, you'll need to
 use a library. There are many libraries available for PDF processing, but we
-recommend pdfplumber because it's easy to use and handles most cases well.
-First, you'll need to install it using pip. Then you can use the code below...
+recommend pdf-parse because it's easy to use and handles most cases well.
+First, you'll need to install it using npm. Then you can use the code below...
 ```
 
 The concise version assumes Claude knows what PDFs are and how libraries work.
@@ -94,11 +95,16 @@ Example:
 
 Use this template and customize as needed:
 
-```python
-def generate_report(data, format="markdown", include_charts=True):
-    # Process data
-    # Generate output in specified format
-    # Optionally include visualizations
+```typescript
+function generateReport(
+  data: unknown,
+  format: "markdown" | "html" = "markdown",
+  includeCharts = true
+): string {
+  // Process data
+  // Generate output in specified format
+  // Optionally include visualizations
+}
 ```
 ````
 
@@ -118,7 +124,7 @@ Example:
 Run exactly this script:
 
 ```bash
-python scripts/migrate.py --verify --backup
+npx ts-node scripts/migrate.ts --verify --backup
 ```
 
 Do not modify the command or add additional flags.
@@ -261,9 +267,9 @@ pdf/
 ├── reference.md          # API reference (loaded as needed)
 ├── examples.md           # Usage examples (loaded as needed)
 └── scripts/
-    ├── analyze_form.py   # Utility script (executed, not loaded)
-    ├── fill_form.py      # Form filling script
-    └── validate.py       # Validation script
+    ├── analyze-form.ts   # Utility script (executed, not loaded)
+    ├── fill-form.ts      # Form filling script
+    └── validate.ts       # Validation script
 ```
 
 #### Pattern 1: High-level guide with references
@@ -278,11 +284,13 @@ description: Extracts text and tables from PDF files, fills forms, and merges do
 
 ## Quick start
 
-Extract text with pdfplumber:
-```python
-import pdfplumber
-with pdfplumber.open("file.pdf") as pdf:
-    text = pdf.pages[0].extract_text()
+Extract text with pdf-parse:
+```typescript
+import pdf from 'pdf-parse';
+import { readFile } from 'fs/promises';
+
+const buffer = await readFile('file.pdf');
+const { text } = await pdf(buffer);
 ```
 
 ## Advanced features
@@ -464,16 +472,16 @@ Copy this checklist and check off items as you complete them:
 
 ```
 Task Progress:
-- [ ] Step 1: Analyze the form (run analyze_form.py)
+- [ ] Step 1: Analyze the form (run analyze-form.ts)
 - [ ] Step 2: Create field mapping (edit fields.json)
-- [ ] Step 3: Validate mapping (run validate_fields.py)
-- [ ] Step 4: Fill the form (run fill_form.py)
-- [ ] Step 5: Verify output (run verify_output.py)
+- [ ] Step 3: Validate mapping (run validate-fields.ts)
+- [ ] Step 4: Fill the form (run fill-form.ts)
+- [ ] Step 5: Verify output (run verify-output.ts)
 ```
 
 **Step 1: Analyze the form**
 
-Run: `python scripts/analyze_form.py input.pdf`
+Run: `npx ts-node scripts/analyze-form.ts input.pdf`
 
 This extracts form fields and their locations, saving to `fields.json`.
 
@@ -483,17 +491,17 @@ Edit `fields.json` to add values for each field.
 
 **Step 3: Validate mapping**
 
-Run: `python scripts/validate_fields.py fields.json`
+Run: `npx ts-node scripts/validate-fields.ts fields.json`
 
 Fix any validation errors before continuing.
 
 **Step 4: Fill the form**
 
-Run: `python scripts/fill_form.py input.pdf fields.json output.pdf`
+Run: `npx ts-node scripts/fill-form.ts input.pdf fields.json output.pdf`
 
 **Step 5: Verify output**
 
-Run: `python scripts/verify_output.py output.pdf`
+Run: `npx ts-node scripts/verify-output.ts output.pdf`
 
 If verification fails, return to Step 2.
 ````
@@ -532,13 +540,13 @@ This shows the validation loop pattern using reference documents instead of scri
 ## Document editing process
 
 1. Make your edits to `word/document.xml`
-2. **Validate immediately**: `python ooxml/scripts/validate.py unpacked_dir/`
+2. **Validate immediately**: `npx ts-node ooxml/scripts/validate.ts unpacked_dir/`
 3. If validation fails:
    - Review the error message carefully
    - Fix the issues in the XML
    - Run validation again
 4. **Only proceed when validation passes**
-5. Rebuild: `python ooxml/scripts/pack.py unpacked_dir/ output.docx`
+5. Rebuild: `npx ts-node ooxml/scripts/pack.ts unpacked_dir/ output.docx`
 6. Test the output document
 ```
 
@@ -826,8 +834,8 @@ Iterate based on these observations rather than assumptions. The 'name' and 'des
 
 Always use forward slashes in file paths, even on Windows:
 
-* ✓ **Good**: `scripts/helper.py`, `reference/guide.md`
-* ✗ **Avoid**: `scripts\helper.py`, `reference\guide.md`
+* ✓ **Good**: `scripts/helper.ts`, `reference/guide.md`
+* ✗ **Avoid**: `scripts\helper.ts`, `reference\guide.md`
 
 Unix-style paths work across all platforms, while Windows-style paths cause errors on Unix systems.
 
@@ -837,15 +845,19 @@ Don't present multiple approaches unless necessary:
 
 ````markdown  theme={null}
 **Bad example: Too many choices** (confusing):
-"You can use pypdf, or pdfplumber, or PyMuPDF, or pdf2image, or..."
+"You can use pdf-parse, or pdfjs-dist, or pdf2pic, or..."
 
 **Good example: Provide a default** (with escape hatch):
-"Use pdfplumber for text extraction:
-```python
-import pdfplumber
+"Use pdf-parse for text extraction:
+```typescript
+import pdf from 'pdf-parse';
+import { readFile } from 'fs/promises';
+
+const buffer = await readFile('file.pdf');
+const { text } = await pdf(buffer);
 ```
 
-For scanned PDFs requiring OCR, use pdf2image with pytesseract instead."
+For scanned PDFs requiring OCR, use pdf2pic with tesseract.js instead."
 ````
 
 ## Advanced: Skills with executable code
@@ -858,51 +870,58 @@ When writing scripts for Skills, handle error conditions rather than punting to 
 
 **Good example: Handle errors explicitly**:
 
-```python  theme={null}
-def process_file(path):
-    """Process a file, creating it if it doesn't exist."""
-    try:
-        with open(path) as f:
-            return f.read()
-    except FileNotFoundError:
-        # Create file with default content instead of failing
-        print(f"File {path} not found, creating default")
-        with open(path, 'w') as f:
-            f.write('')
-        return ''
-    except PermissionError:
-        # Provide alternative instead of failing
-        print(f"Cannot access {path}, using default")
-        return ''
+```typescript  theme={null}
+import { readFile, writeFile } from 'fs/promises';
+
+async function processFile(path: string): Promise<string> {
+  try {
+    return await readFile(path, 'utf-8');
+  } catch (err) {
+    const nodeErr = err as NodeJS.ErrnoException;
+    if (nodeErr.code === 'ENOENT') {
+      console.error(`File ${path} not found, creating default`);
+      await writeFile(path, '', { flag: 'w' });
+      return '';
+    }
+    if (nodeErr.code === 'EACCES') {
+      console.error(`Cannot access ${path}, using default`);
+      return '';
+    }
+    throw err;
+  }
+}
 ```
 
 **Bad example: Punt to Claude**:
 
-```python  theme={null}
-def process_file(path):
-    # Just fail and let Claude figure it out
-    return open(path).read()
+```typescript  theme={null}
+import { readFile } from 'fs/promises';
+
+async function processFile(path: string): Promise<string> {
+  // Just fail and let Claude figure it out
+  return readFile(path, 'utf-8');
+}
 ```
 
 Configuration parameters should also be justified and documented to avoid "voodoo constants" (Ousterhout's law). If you don't know the right value, how will Claude determine it?
 
 **Good example: Self-documenting**:
 
-```python  theme={null}
-# HTTP requests typically complete within 30 seconds
-# Longer timeout accounts for slow connections
-REQUEST_TIMEOUT = 30
+```typescript  theme={null}
+// HTTP requests typically complete within 30 seconds
+// Longer timeout accounts for slow connections
+const REQUEST_TIMEOUT_MS = 30_000;
 
-# Three retries balances reliability vs speed
-# Most intermittent failures resolve by the second retry
-MAX_RETRIES = 3
+// Three retries balances reliability vs speed
+// Most intermittent failures resolve by the second retry
+const MAX_RETRIES = 3;
 ```
 
 **Bad example: Magic numbers**:
 
-```python  theme={null}
-TIMEOUT = 47  # Why 47?
-RETRIES = 5   # Why 5?
+```typescript  theme={null}
+const TIMEOUT = 47_000;  // Why 47?
+const RETRIES = 5;       // Why 5?
 ```
 
 ### Provide utility scripts
@@ -922,8 +941,8 @@ The diagram above shows how executable scripts work alongside instruction files.
 
 **Important distinction**: Make clear in your instructions whether Claude should:
 
-* **Execute the script** (most common): "Run `analyze_form.py` to extract fields"
-* **Read it as reference** (for complex logic): "See `analyze_form.py` for the field extraction algorithm"
+* **Execute the script** (most common): "Run `analyze-form.ts` to extract fields"
+* **Read it as reference** (for complex logic): "See `analyze-form.ts` for the field extraction algorithm"
 
 For most utility scripts, execution is preferred because it's more reliable and efficient. See the [Runtime environment](#runtime-environment) section below for details on how script execution works.
 
@@ -932,10 +951,10 @@ For most utility scripts, execution is preferred because it's more reliable and 
 ````markdown  theme={null}
 ## Utility scripts
 
-**analyze_form.py**: Extract all form fields from PDF
+**analyze-form.ts**: Extract all form fields from PDF
 
 ```bash
-python scripts/analyze_form.py input.pdf > fields.json
+npx ts-node scripts/analyze-form.ts input.pdf > fields.json
 ```
 
 Output format:
@@ -946,17 +965,17 @@ Output format:
 }
 ```
 
-**validate_boxes.py**: Check for overlapping bounding boxes
+**validate-boxes.ts**: Check for overlapping bounding boxes
 
 ```bash
-python scripts/validate_boxes.py fields.json
+npx ts-node scripts/validate-boxes.ts fields.json
 # Returns: "OK" or lists conflicts
 ```
 
-**fill_form.py**: Apply field values to PDF
+**fill-form.ts**: Apply field values to PDF
 
 ```bash
-python scripts/fill_form.py input.pdf fields.json output.pdf
+npx ts-node scripts/fill-form.ts input.pdf fields.json output.pdf
 ```
 ````
 
@@ -969,7 +988,7 @@ When inputs can be rendered as images, have Claude analyze them:
 
 1. Convert PDF to images:
    ```bash
-   python scripts/pdf_to_images.py form.pdf
+   npx ts-node scripts/pdf-to-images.ts form.pdf
    ```
 
 2. Analyze each page image to identify form fields
@@ -977,7 +996,7 @@ When inputs can be rendered as images, have Claude analyze them:
 ````
 
 <Note>
-  In this example, you'd need to write the `pdf_to_images.py` script.
+  In this example, you'd need to write the `pdf-to-images.ts` script.
 </Note>
 
 Claude's vision capabilities help understand layouts and structures.
@@ -1029,10 +1048,10 @@ Skills run in a code execution environment with filesystem access, bash commands
   * Good: `reference/finance.md`, `reference/sales.md`
   * Bad: `docs/file1.md`, `docs/file2.md`
 * **Bundle comprehensive resources**: Include complete API docs, extensive examples, large datasets; no context penalty until accessed
-* **Prefer scripts for deterministic operations**: Write `validate_form.py` rather than asking Claude to generate validation code
+* **Prefer scripts for deterministic operations**: Write `validate-form.ts` rather than asking Claude to generate validation code
 * **Make execution intent clear**:
-  * "Run `analyze_form.py` to extract fields" (execute)
-  * "See `analyze_form.py` for the extraction algorithm" (read as reference)
+  * "Run `analyze-form.ts` to extract fields" (execute)
+  * "See `analyze-form.ts` for the extraction algorithm" (read as reference)
 * **Test file access patterns**: Verify Claude can navigate your directory structure by testing with real requests
 
 **Example:**
@@ -1079,12 +1098,15 @@ Don't assume packages are available:
 "Use the pdf library to process the file."
 
 **Good example: Explicit about dependencies**:
-"Install required package: `pip install pypdf`
+"Install required package: `npm install pdf-parse`
 
 Then use it:
-```python
-from pypdf import PdfReader
-reader = PdfReader("file.pdf")
+```typescript
+import pdf from 'pdf-parse';
+import { readFile } from 'fs/promises';
+
+const buffer = await readFile('file.pdf');
+const { text } = await pdf(buffer);
 ```"
 ````
 
