@@ -21,7 +21,11 @@ Task tool (general-purpose):
     |----------|------------------|
     | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
     | Spec Alignment | Plan covers spec requirements, no major scope creep |
-    | Task Decomposition | Tasks have clear boundaries, steps are actionable |
+    | Task Decomposition | Tasks grouped by behavior (not per file/layer); clear boundaries; steps actionable |
+    | Checklist Format | Every task/subtask has one-line summary with `[ ]` checkbox |
+    | Dependencies | If new libraries needed, dedicated first task to add them and run install |
+    | Verify & Commit | Each task ends with: rules check, run check script, git commit |
+    | Test-First | Each task starts with failing test against interface, then implementation |
     | Buildability | Could an engineer follow this plan without getting stuck? |
 
     ## Calibration

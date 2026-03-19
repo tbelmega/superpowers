@@ -655,13 +655,13 @@ For Skills where output quality depends on seeing examples, provide input/output
 ````markdown  theme={null}
 ## Commit message format
 
-Generate commit messages following these examples:
+Use the original Git conventions. The subject line is a capitalized, imperative-mood summary of what this commit will do when applied. No type prefix (no "feat:", "fix:", "chore:").
 
 **Example 1:**
 Input: Added user authentication with JWT tokens
 Output:
 ```
-feat(auth): implement JWT-based authentication
+Implement JWT-based authentication
 
 Add login endpoint and token validation middleware
 ```
@@ -670,7 +670,7 @@ Add login endpoint and token validation middleware
 Input: Fixed bug where dates displayed incorrectly in reports
 Output:
 ```
-fix(reports): correct date formatting in timezone conversion
+Correct date formatting in timezone conversion
 
 Use UTC timestamps consistently across report generation
 ```
@@ -679,13 +679,13 @@ Use UTC timestamps consistently across report generation
 Input: Updated dependencies and refactored error handling
 Output:
 ```
-chore: update dependencies and refactor error handling
+Update dependencies and refactor error handling
 
 - Upgrade lodash to 4.17.21
 - Standardize error response format across endpoints
 ```
 
-Follow this style: type(scope): brief description, then detailed explanation.
+Follow this style: capitalized imperative subject, then optional detailed body.
 ````
 
 Examples help Claude understand the desired style and level of detail more clearly than descriptions alone.
