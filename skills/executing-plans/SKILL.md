@@ -24,10 +24,10 @@ Load plan, review critically, execute all tasks, report when complete.
 ### Step 2: Execute Tasks
 
 For each task:
-1. Mark as in_progress
+1. Mark as in_progress; update plan file: task `[~]`
 2. Follow each step exactly (plan has bite-sized steps)
 3. Run verifications as specified
-4. Mark as completed
+4. Mark as completed; update plan file: task `[x]`
 
 ### Step 3: Complete Development
 
@@ -53,6 +53,10 @@ After all tasks complete and verified:
 - Fundamental approach needs rethinking
 
 **Don't force through blockers** - stop and ask.
+
+## Plan File Updates
+
+Update the plan .md file as you go so the human has a persistent progress view even if the agent crashes: `[~]` when starting a task, `[x]` when complete.
 
 ## Remember
 - Review plan critically first

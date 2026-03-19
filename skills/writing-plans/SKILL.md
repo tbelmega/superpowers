@@ -51,6 +51,20 @@ Tasks may have detailed descriptions; the checkbox line is always present.
 
 If any task requires new third-party libraries, add a dedicated first task to add all dependencies and run the project's install command (e.g. `yarn install`, `npm install`). This prevents implementation agents from failing mid-task due to missing packages.
 
+## Feature Flags
+
+For new features, the spec may require a feature flag (invisible by default, enable in select envs for testing). For multi-tenant SaaS, feature config may also be needed (enable/disable per tenant based on contract). **If the spec doesn't mention it, seek clarification before planning**—did the human not think of it, or do they not want it?
+
+If a feature flag (or per-tenant feature config) is wanted:
+- **First task after dependencies** — Add the feature flag infrastructure and wiring.
+- **Other tasks** — Implement behavior conditional on the flag (and per-tenant config if applicable). New code is gated; existing behavior unchanged when flag/config is off.
+
+## Cross-cutting Concerns (API Features)
+
+For plans that add or change API endpoints: if the spec doesn't mention them, **ask whether any of these should be added** — input validation, authentication, logging for troubleshooting.
+
+If the user wants any of these: **check the codebase first** for established patterns and libraries (validation schemas, auth middleware, logging). Add tasks that follow existing conventions.
+
 ## Top-Down, Interface-Driven Structure
 
 Tasks are written top-down:
@@ -131,6 +145,8 @@ Once approved, use superpowers:subagent-driven-development — dispatch a fresh 
 | Save location | `docs/plans/YYYY-MM-DD-<feature>.md` |
 | Task checklist | `[ ]` / `[~]` / `[x]` on every task and subtask |
 | Dependencies | Dedicated first task if new libraries needed |
+| Feature flag | If wanted: first task after dependencies; other tasks conditional on flag |
+| Cross-cutting (API) | If spec silent: ask about validation, auth, logging; if yes, check codebase for patterns |
 | Task order | Test first → implement → verify → rules check → run checks → commit |
 | Task grouping | By behavior, not by file or layer |
 | Test granularity | Integration at interface; minimal unit tests; consider fast-check for pure functions with many input combinations |

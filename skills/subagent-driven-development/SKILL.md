@@ -55,7 +55,7 @@ digraph process {
         "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [shape=box];
         "Code quality reviewer subagent approves?" [shape=diamond];
         "Implementer subagent fixes quality issues" [shape=box];
-        "Mark task complete in TodoWrite" [shape=box];
+        "Mark task complete in TodoWrite, update plan checkboxes" [shape=box];
     }
 
     "Read plan, extract all tasks with full text, note context, create TodoWrite" [shape=box];
@@ -83,6 +83,14 @@ digraph process {
     "Dispatch final code reviewer subagent for entire implementation" -> "Use superpowers:finishing-a-development-branch";
 }
 ```
+
+## Plan File Updates
+
+Update the plan .md file as you go so the human has a persistent progress view even if the agent crashes:
+- **When starting a task** — Mark it `[~]` in the plan file
+- **When a task is complete** — Mark it `[x]` in the plan file
+
+Commit plan file updates with the task commit or in a separate commit.
 
 ## Model Selection
 
@@ -266,7 +274,7 @@ Done!
 
 **Required workflow skills:**
 - **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
-- **superpowers:writing-plans** - Creates the plan this skill executes
+- **superpowers:writing-plans** - Creates the plan this skill executes (plan uses `[ ]`/`[~]`/`[x]` checkboxes—update them in the plan file as tasks progress)
 - **superpowers:requesting-code-review** - Code review template for reviewer subagents
 - **superpowers:finishing-a-development-branch** - Complete development after all tasks
 

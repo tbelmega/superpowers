@@ -26,6 +26,7 @@ Task tool (general-purpose):
     | Dependencies | If new libraries needed, dedicated first task to add them and run install |
     | Verify & Commit | Each task ends with: rules check, run check script, git commit |
     | Test-First | Each task starts with failing test against interface, then implementation |
+    | Cross-cutting (API features) | Input validation, authentication, logging for troubleshooting addressed? |
     | Buildability | Could an engineer follow this plan without getting stuck? |
 
     ## Calibration

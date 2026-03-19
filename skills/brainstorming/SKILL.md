@@ -79,6 +79,7 @@ digraph brainstorming {
 - Prefer multiple choice questions when possible, but open-ended is fine too
 - Only one question per message - if a topic needs more exploration, break it into multiple questions
 - Focus on understanding: purpose, constraints, success criteria
+- **New features:** If the human doesn't mention a feature flag, ask: "Should this be behind a feature flag (invisible by default, enable in select envs for testing)?" For multi-tenant SaaS, also ask about feature config (enable/disable per tenant based on contract). Seek clarification—oversight or intentional?
 
 **Exploring approaches:**
 
