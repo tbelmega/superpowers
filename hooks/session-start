@@ -32,7 +32,15 @@ escape_for_json() {
 
 using_superpowers_escaped=$(escape_for_json "$using_superpowers_content")
 warning_escaped=$(escape_for_json "$warning_message")
-session_context="<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n**Below is the full content of your 'superpowers:using-superpowers' skill - your introduction to using skills. For all other skills, use the 'Skill' tool:**\n\n${using_superpowers_escaped}\n\n${warning_escaped}\n</EXTREMELY_IMPORTANT>"
+
+# Cursor: short lead-in + no misleading "Skill tool"-only framing (see using-superpowers → Cursor Agent).
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+  cursor_lead_raw=$'**CURSOR AGENT — READ FIRST:** There is no Claude Code `Skill` tool. When any Superpowers skill might apply, **Read** that skill\'s `SKILL.md` under the plugin `skills/<skill-name>/` tree (paths often appear in your skills list) *before* editing files. Tool mapping: `skills/using-superpowers/references/cursor-tools.md`. In your first substantive reply after loading a skill, announce: **Using [skill-name] to [purpose]**.\n\n'
+  cursor_lead_esc=$(escape_for_json "$cursor_lead_raw")
+  session_context="${cursor_lead_esc}<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n**Full `using-superpowers` skill:**\n\n${using_superpowers_escaped}\n\n${warning_escaped}\n</EXTREMELY_IMPORTANT>"
+else
+  session_context="<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n**Below is the full content of your 'superpowers:using-superpowers' skill - your introduction to using skills. For all other skills, use the 'Skill' tool:**\n\n${using_superpowers_escaped}\n\n${warning_escaped}\n</EXTREMELY_IMPORTANT>"
+fi
 
 # Output context injection as JSON.
 # Cursor hooks expect additional_context.

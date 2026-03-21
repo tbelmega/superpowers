@@ -1,0 +1,15 @@
+---
+description: Superpowers — implementation plans under docs/plans require executing-plans / writing-plans discipline
+globs: ["**/docs/plans/**/*.md", "**/AGENTS.md"]
+alwaysApply: false
+---
+
+# Plans and Superpowers
+
+When the user references or edits an implementation plan under `docs/plans/` (or asks to **execute** a plan):
+
+1. **Read** `skills/executing-plans/SKILL.md` before batch execution (checkbox updates `[ ]` → `[~]` → `[x]`, verifications, **finishing-a-development-branch** when done).
+2. **Read** `skills/writing-plans/SKILL.md` when creating or restructuring plan tasks.
+3. If the plan text requires it, **Read** `skills/subagent-driven-development/SKILL.md` for per-task subagent flow.
+
+Use the **Read** tool on those paths in the Superpowers plugin or workspace fork—Cursor has no `Skill` tool.

@@ -1,0 +1,14 @@
+---
+description: Superpowers — load skills via Read on SKILL.md (Cursor has no Skill tool)
+alwaysApply: true
+---
+
+# Superpowers in Cursor
+
+When this conversation involves planning, debugging, executing a written implementation plan, TDD, code review, git worktrees, or finishing a branch: **before** editing files or giving procedural steps, **Read** the matching skill from the Superpowers plugin, e.g. `skills/<skill-name>/SKILL.md` (use the path from your agent skills list if shown).
+
+Announce after loading: **Using [skill-name] to [purpose]**.
+
+Full tool mapping: `skills/using-superpowers/references/cursor-tools.md` in the Superpowers plugin (or your fork).
+
+User and project instructions still override skill steps when they conflict.

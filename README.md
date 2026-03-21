@@ -70,6 +70,14 @@ In Cursor Agent chat, install from marketplace:
 
 or search for "superpowers" in the plugin marketplace.
 
+**After install (strongly recommended):**
+
+- **Session hook** injects `using-superpowers` on new chats. That is a *nudge*, not a guarantee—models can still skip skills.
+- **Add a Cursor User Rule** (Settings → Rules) or copy a project rule from [`cursor-rules/`](cursor-rules/README.md) so that when work matches a skill (plans, debugging, TDD, executing a plan), the agent **Reads** the matching `SKILL.md` and follows it. Cursor has no Claude Code `Skill` tool; see [`skills/using-superpowers/references/cursor-tools.md`](skills/using-superpowers/references/cursor-tools.md).
+- **Start a new Agent session** after changing rules or updating the plugin so hooks re-run.
+
+**Cursor vs Claude Code:** Automatic skill triggering is tighter in Claude Code (native `Skill` tool). In Cursor, the fork optimizes for **Read `SKILL.md` + your rules** so behavior stays predictable.
+
 ### Codex
 
 Tell Codex:
@@ -122,9 +130,13 @@ Start a new session in your chosen platform and ask for something that should tr
 
 7. **finishing-a-development-branch** - Activates when tasks complete. Verifies tests, presents options (merge/PR/keep/discard), cleans up worktree.
 
-**The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
+**The agent should check for relevant skills before any task.** In Claude Code this is reinforced by the `Skill` tool; in **Cursor**, reinforce it with **User Rules** and the [`cursor-tools`](skills/using-superpowers/references/cursor-tools.md) mapping (Read `SKILL.md`).
 
 ## What's Inside
+
+### Cursor rule templates
+
+Optional examples in [`cursor-rules/`](cursor-rules/README.md) (`*.mdc.example`) — copy into `.cursor/rules/` or User Rules so agents **Read** `SKILL.md` when skills apply (Cursor has no `Skill` tool).
 
 ### Skills Library
 
