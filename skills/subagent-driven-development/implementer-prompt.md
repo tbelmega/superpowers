@@ -28,13 +28,16 @@ Task tool (general-purpose):
 
     ## Your Job
 
+    The **Task Description** above is the contract. Complete **every** substep it lists **in order** — not only the coding parts. Plans often end with: review against project rules, run the project `check` script (or equivalent), then `git commit`. Those are **mandatory** when present; skipping them to “just ship the code” is wrong. If the task names specific commands, run them; if you truly cannot, report BLOCKED or NEEDS_CONTEXT with why.
+
     Once you're clear on requirements:
-    1. Implement exactly what the task specifies
-    2. Write tests (following TDD if task says to)
-    3. Verify implementation works
-    4. Commit your work
-    5. Self-review (see below)
-    6. Report back
+    1. Follow the task’s own numbered/bulleted sequence (tests/TDD first if the task says so)
+    2. Implement exactly what the task specifies
+    3. Run all verifications the task requires (tests, typecheck, lint, full check script — whatever it names)
+    4. Do any **rules / ADR / Cursor rules** review the task requires and summarize what you checked
+    5. **Commit** when the task says to, after checks pass
+    6. Self-review (see below)
+    7. Report back with evidence (e.g. commands run, outcomes, commit hash if you committed)
 
     Work from: [directory]
 

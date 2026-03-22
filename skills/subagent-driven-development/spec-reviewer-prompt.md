@@ -53,6 +53,10 @@ Task tool (general-purpose):
     - Did they solve the wrong problem?
     - Did they implement the right feature but wrong way?
 
+    **Process obligations (from the task text):**
+    - If the task required a **rules review**, **running checks** (named script or tests), or **`git commit`**, did they actually do it? Treat “I ran tests” with no evidence as suspicious; prefer git history, command output in the report, or your own spot-checks.
+    - Missing a plan-mandated check or commit is **❌ not spec compliant**, same as missing code.
+
     **Verify by reading code, not by trusting report.**
 
     Report:
