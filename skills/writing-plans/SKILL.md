@@ -7,7 +7,7 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write implementation plans that an engineer with zero codebase context can follow. Plans are top-down, interface-driven, and test-first. Each task groups related work by user-visible behavior—never by file or layer. Save plans centrally under version control.
+Write implementation plans that an engineer with zero codebase context can follow. Plans are top-down, interface-driven, and test-first. Each task groups related work by user-visible behavior—never by file or layer. Save plans centrally under version control. Optimize plans for compatibility with Cursor plan mode.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
@@ -19,14 +19,55 @@ Write implementation plans that an engineer with zero codebase context can follo
 
 If the spec spans multiple independent subsystems, suggest breaking into separate plans—one per subsystem. Each plan should produce working, testable software on its own.
 
-## Plan Document Header
+## Plan Document Structure (Final File Order)
 
-Every plan MUST start with:
+The **saved** plan file MUST begin with a **Cursor Plan Document** YAML frontmatter block, closed by `---` on its own line, then the markdown body. Nothing may appear before the opening `---`.
+
+**Assembly workflow (do this order):**
+
+1. Write the full markdown body first: title, implementer blockquote, Goal, Architecture, Tech Stack, file map, and all tasks with nested detail.
+2. Assign every **top-level** task a unique kebab-case **`id`** (stable slug, ASCII; match across YAML and body).
+3. On each top-level task’s checkbox line, add **`(id)`** immediately after the checkbox token and before the summary text (see Task Checklist Format).
+4. **Then** build the YAML frontmatter: `name`, `overview`, `todos` (one entry per top-level task), `isProject`. Prepend it so the file starts with `---`.
+
+This keeps strategy and narrative in the body while Cursor’s planner can read structured `todos`.
+
+## Cursor Plan Document Header (YAML Frontmatter)
+
+After the plan body is written and top-level task ids are fixed, prepend:
+
+```yaml
+---
+name: [kebab-case slug; often matches filename feature segment, e.g. admin-api-admin-prefixes]
+overview: >
+  [1–2 sentences: what this plan delivers and main constraints; align with Goal + Architecture in the body.]
+  Before implementing, Read and follow superpowers:executing-plans (load `skills/executing-plans/SKILL.md` from the Superpowers plugin or workspace fork): review the plan, then complete each top-level task in order, including TDD, rules check, run checks, and git commit as written per task. Keep YAML `todos[].status` in sync with top-level checkboxes.
+todos:
+  - id: [same id as in parentheses on that task’s checkbox line]
+    content: "[Same one-line summary as on that top-level task line, without the (id) prefix]"
+    status: pending
+  # … one YAML entry per top-level task, in the same order as the plan
+isProject: false
+---
+```
+
+**Field rules:**
+
+- **`name`** — Short, unique kebab-case identifier for the plan (not necessarily the full filename).
+- **`overview`** — MUST include two parts: (1) **Product/architecture intent** — 1–2 sentences aligned with **Goal** and **Architecture** in the body. (2) **Execution hook** — An explicit instruction to **Read and follow superpowers:executing-plans** before coding (path: `skills/executing-plans/SKILL.md` in the plugin or fork), covering whole-plan execution (review plan → tasks in order → TDD, checks, commits as written) and keeping YAML todo `status` aligned with top-level checkboxes. Cursor and other agents read `overview` in plan mode; this is the primary place to anchor execution discipline.
+- **`todos`** — **Only top-level tasks** (one Cursor todo per behavior-grouped task). Sub-bullets under a task are **not** separate YAML todos; their detail stays in the markdown body only.
+- **`content`** — The executable summary for that slice; the body underneath carries TDD steps, verify, commit, and nuance. Use YAML quoting if the string contains `:` or quotes.
+- **`status`** — Use `pending` for every todo when the plan is first saved. Executing agents update to `in_progress` / `completed` in lockstep with `[~]` / `[x]` on the matching top-level checkbox (and revert or fix if the checkbox and YAML disagree).
+- **`isProject`** — Default `false` for repo plans under `docs/plans/`. Set `true` only when the project’s Cursor workflow expects it.
+
+## Markdown Body Header (After Frontmatter)
+
+Immediately after the closing `---` of the YAML block, the markdown MUST continue with:
 
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task. Steps use checkbox (`[ ]` / `[~]` / `[x]`) syntax for tracking.
+> **For implementers:** Use **superpowers:executing-plans** for the full workflow (see YAML `overview` for the execution note). Top-level tasks use checkbox (`[ ]` / `[~]` / `[x]`) syntax with a `(todo-id)` matching YAML `todos[].id`.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -37,19 +78,35 @@ Every plan MUST start with:
 ---
 ```
 
+(The trailing `---` here is an optional markdown horizontal rule before the next section; it is **not** part of the YAML frontmatter.)
+
 ## Task Checklist Format
 
-Every task and subtask MUST have a one-line summary with checkbox-style tracking:
+**Top-level tasks** (each maps to one Cursor YAML todo):
 
-- `[ ]` — not started
-- `[~]` — in progress
-- `[x]` — done
+- One checkbox line per top-level task, with **`(id)`** right after the brackets:  
+  `- [ ] (my-task-id) Short one-line summary of this behavior slice`
+- `[~]` / `[x]` replace `[ ]` as work progresses; **keep the same `(id)`** on that line.
 
-Tasks may have detailed descriptions; the checkbox line is always present.
+**Subtasks** (nested steps under a top-level task: tests, implementation notes, rules check, run checks, commit):
+
+- Use `- [ ]` / `[~]` / `[x]` on each subtask line as today.
+- Do **not** add a Cursor todo or `(id)` for subtasks—execution detail stays in the body and refers to the parent task’s id when useful.
+
+**Statuses:**
+
+- `[ ]` — not started (YAML: `pending`)
+- `[~]` — in progress (YAML: `in_progress`)
+- `[x]` — done (YAML: `completed`)
+
+Every task and subtask MUST keep a one-line summary on its checkbox line where applicable; top-level lines always include `(id)`.
 
 ## Dependencies First
 
-If any task requires new third-party libraries, add a dedicated first task to add all dependencies and run the project's install command (e.g. `yarn install`, `npm install`). This prevents implementation agents from failing mid-task due to missing packages.
+**Order:** dependencies and shared contracts before feature behavior.
+
+- If any task requires new **third-party libraries**, add a dedicated **first** task to add all dependencies and run the project's install command (e.g. `yarn install`, `npm install`). This prevents implementation agents from failing mid-task due to missing packages.
+- If the work introduces or changes **shared types, API contracts, or schemas** used across modules, add an **early task** (after the dependency-install task if present, before dependent behavior tasks) so downstream tasks target a stable interface.
 
 ## Feature Flags
 
@@ -85,7 +142,7 @@ Tasks are written top-down:
 
 Each task follows this shape:
 
-1. **Add or extend a test** — Write failing assertion(s) against the public interface first.
+1. **Add or extend a test** — Write failing assertion(s) against the public interface first. Instruct the executing agent to follow project-specific rules for writing tests. 
 2. **Implement everything needed to pass** — Across as many files as required (middleware, use case, repository, client, wiring).
 3. **Complete when checks pass** — Run the project's `check` script (or equivalent) on touched modules.
 
@@ -97,7 +154,7 @@ The last subtasks of every task MUST be:
 
 1. **Check rules** — Review changes against project-specific rules (ADRs, Cursor rules, etc.). Output a summary of rules checked and any violations.
 2. **Run checks** — Execute the `check` script on all touched modules (or run typechecks and tests for affected modules if no dedicated script exists).
-3. **Commit** — `git commit` if checks pass.
+3. **Commit** — `git commit` if checks pass. Pre-generate the commit message into the task, following the commit message rules. (NO PREFIXES feat/fix/chore etc)
 
 ## File Structure (Before Tasks)
 
@@ -136,20 +193,24 @@ After saving the plan, ask the human for review:
 
 **"Plan complete and saved to `docs/plans/<filename>.md`. Please review. Ready to proceed?"**
 
-Once approved, use superpowers:subagent-driven-development — dispatch a fresh subagent per task with review between tasks.
+Once approved, implementation follows **superpowers:executing-plans** — the implementer should Read `skills/executing-plans/SKILL.md` and run the full plan-execution process described there.
 
 ## Quick Reference
 
 | Element | Requirement |
 |---------|-------------|
 | Save location | `docs/plans/YYYY-MM-DD-<feature>.md` |
-| Task checklist | `[ ]` / `[~]` / `[x]` on every task and subtask |
-| Dependencies | Dedicated first task if new libraries needed |
+| File start | Cursor YAML frontmatter (`name`, `overview`, `todos`, `isProject`), then markdown body |
+| `overview` | Goal/architecture summary **plus** explicit **superpowers:executing-plans** execution hook (see Cursor Plan Document Header) |
+| Cursor `todos` | One entry per **top-level** task; `id` matches `(id)` on that task’s checkbox line; `content` matches the summary; new plans: all `status: pending` |
+| Task checklist | Top-level: `[ ] (id) summary` then `[~]`/`[x]` with same `(id)`. Subtasks: `[ ]`/`[~]`/`[x]` only, no `(id)` |
+| Dependencies | Dedicated first task if new libraries needed; early task for shared types/contracts when needed |
 | Feature flag | If wanted: first task after dependencies; other tasks conditional on flag |
 | Cross-cutting (API) | If spec silent: ask about validation, auth, logging; if yes, check codebase for patterns |
 | Task order | Test first → implement → verify → rules check → run checks → commit |
 | Task grouping | By behavior, not by file or layer |
 | Test granularity | Integration at interface; minimal unit tests; consider fast-check for pure functions with many input combinations |
+| Execution sync | Keep each YAML todo `status` aligned with its top-level checkbox |
 
 ## Common Mistakes
 

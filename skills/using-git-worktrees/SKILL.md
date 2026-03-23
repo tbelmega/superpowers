@@ -210,8 +210,8 @@ Ready to implement auth feature
 
 **Called by:**
 - **brainstorming** (Phase 4) - REQUIRED when design is approved and implementation follows
-- **subagent-driven-development** - REQUIRED before executing any tasks
-- **executing-plans** - REQUIRED before executing any tasks
+- **executing-plans** - REQUIRED before executing plan tasks (default path from **writing-plans**)
+- **subagent-driven-development** - REQUIRED before Task-worker execution when using that optional workflow
 - Any skill needing isolated workspace
 
 **Pairs with:**

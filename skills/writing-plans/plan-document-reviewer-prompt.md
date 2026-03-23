@@ -22,8 +22,11 @@ Task tool (general-purpose):
     | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
     | Spec Alignment | Plan covers spec requirements, no major scope creep |
     | Task Decomposition | Tasks grouped by behavior (not per file/layer); clear boundaries; steps actionable |
-    | Checklist Format | Every task/subtask has one-line summary with `[ ]` checkbox |
-    | Dependencies | If new libraries needed, dedicated first task to add them and run install |
+    | Cursor frontmatter | File starts with YAML `---` block: `name`, `overview`, `todos`, `isProject`; new plans use `status: pending` on each todo |
+    | `overview` execution | `overview` includes product/architecture intent and an explicit instruction to Read and follow **superpowers:executing-plans** (path to `skills/executing-plans/SKILL.md`) for whole-plan execution, TDD, checks, commits, and YAML todo sync |
+    | Cursor ↔ body alignment | One YAML todo per top-level task; each `todos[].id` appears exactly once as `(id)` on a top-level checkbox line; `content` matches that line’s summary (without the id token); subtasks are not duplicated as YAML todos |
+    | Checklist Format | Top-level tasks: `- [ ] (id) summary`; subtasks: checkbox lines without `(id)`; every line still has a clear one-line summary |
+    | Dependencies | If new libraries needed, dedicated first task to add them and run install; shared types/contracts early when applicable |
     | Verify & Commit | Each task ends with: rules check, run check script, git commit |
     | Test-First | Each task starts with failing test against interface, then implementation |
     | Cross-cutting (API features) | Input validation, authentication, logging for troubleshooting addressed? |

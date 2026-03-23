@@ -1,9 +1,11 @@
 ---
 name: subagent-driven-development
-description: Use when executing implementation plans with independent tasks in the current session (Cursor — run workers via Task tool; see “In Cursor Agent”)
+description: Optional — when the human explicitly wants Task-tool workers and two-stage review while executing a writing-plans plan (default path is executing-plans; see “Relationship to executing-plans”)
 ---
 
 # Subagent-Driven Development
+
+**Relationship to executing-plans:** **superpowers:writing-plans** points implementers to **superpowers:executing-plans**. Use **this** skill only when the **human explicitly requests** Task-tool workers plus two-stage review. **Plan fidelity** (whole tasks, TDD, checks, commits, checkbox and YAML todo updates) is the same as **executing-plans**—this skill changes **how** work is orchestrated, not **what** can be skipped.
 
 Execute the plan by running **one fresh worker per role/step** (implementer, then spec reviewer, then code quality reviewer), with **two-stage review after each task: spec compliance first, then code quality**.
 
@@ -33,27 +35,22 @@ Cursor has **no** Claude Code “Skill” tool for spawning workers. When this s
 
 ```dot
 digraph when_to_use {
-    "Have implementation plan?" [shape=diamond];
-    "Tasks mostly independent?" [shape=diamond];
-    "Stay in this session?" [shape=diamond];
+    "Implementing from a plan?" [shape=diamond];
+    "Human asked for Task workers + two-stage review?" [shape=diamond];
     "subagent-driven-development" [shape=box];
     "executing-plans" [shape=box];
-    "Manual execution or brainstorm first" [shape=box];
 
-    "Have implementation plan?" -> "Tasks mostly independent?" [label="yes"];
-    "Have implementation plan?" -> "Manual execution or brainstorm first" [label="no"];
-    "Tasks mostly independent?" -> "Stay in this session?" [label="yes"];
-    "Tasks mostly independent?" -> "Manual execution or brainstorm first" [label="no - tightly coupled"];
-    "Stay in this session?" -> "subagent-driven-development" [label="yes"];
-    "Stay in this session?" -> "executing-plans" [label="no - parallel session"];
+    "Implementing from a plan?" -> "Human asked for Task workers + two-stage review?" [label="yes"];
+    "Implementing from a plan?" -> "executing-plans" [label="no / unclear — default"];
+    "Human asked for Task workers + two-stage review?" -> "subagent-driven-development" [label="yes"];
+    "Human asked for Task workers + two-stage review?" -> "executing-plans" [label="no — default"];
 }
 ```
 
-**vs. Executing Plans (parallel session):**
-- Same session for the human (you coordinate here)
-- Fresh worker per step (no context pollution between roles)
-- Two-stage review after each task: spec compliance first, then code quality
-- Faster iteration (no human-in-loop between tasks)
+**Compared to executing-plans (default):**
+- You coordinate in this chat; workers run in **Task** (or equivalent) with **fresh context** per dispatch
+- **Two-stage review** after each task: spec compliance, then code quality
+- Same **stop conditions**, **finishing-a-development-branch**, and **whole-task** requirements as **executing-plans**
 
 ## The Process
 
@@ -96,8 +93,8 @@ digraph process {
     "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer approves?";
     "Code quality reviewer approves?" -> "Implementer fixes quality issues" [label="no"];
     "Implementer fixes quality issues" -> "Dispatch code quality reviewer (./code-quality-reviewer-prompt.md)" [label="re-review"];
-    "Code quality reviewer approves?" -> "Mark task complete in TodoWrite" [label="yes"];
-    "Mark task complete in TodoWrite" -> "More tasks remain?";
+    "Code quality reviewer approves?" -> "Mark task complete: TodoWrite, plan checkboxes, YAML todos" [label="yes"];
+    "Mark task complete: TodoWrite, plan checkboxes, YAML todos" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final reviewer for entire implementation" [label="no"];
     "Dispatch final reviewer for entire implementation" -> "Use superpowers:finishing-a-development-branch";
@@ -107,8 +104,10 @@ digraph process {
 ## Plan File Updates
 
 Update the plan `.md` file as you go so the human has a persistent progress view even if the agent crashes:
-- **When starting a task** — Mark it `[~]` in the plan file
-- **When a task is complete** — Mark it `[x]` in the plan file
+- **When starting a task** — Mark the top-level line `[~]`; if the file has Cursor YAML `todos`, set matching `status: in_progress`
+- **When a task is complete** — Mark the top-level line `[x]`; set matching YAML `status: completed`
+
+Same rules as **superpowers:executing-plans** (pending / in_progress / completed ↔ `[ ]` / `[~]` / `[x]` by todo `id`).
 
 Commit plan file updates with the task commit or in a separate commit.
 
@@ -204,10 +203,9 @@ Done!
 - Safe serial pattern (one implementer at a time)
 - Worker can ask questions (before and during work)
 
-**vs. Executing Plans:**
-- Same session for coordination (no handoff)
-- Continuous progress (no waiting on a separate thread)
-- Review checkpoints are explicit in your loop
+**vs. single-agent executing-plans:**
+- Controller stays in-session; workers are isolated dispatches
+- Review checkpoints are explicit in your loop (spec then quality each task)
 
 **Efficiency gains:**
 - No plan-file read inside the worker unless you choose to include an excerpt (default: you paste full task text)
@@ -270,7 +268,7 @@ Done!
 **Workers should use:**
 - **superpowers:test-driven-development** — TDD for each task when the plan calls for it
 
-**Alternative workflow:**
-- **superpowers:executing-plans** — Use for a parallel session instead of same-session execution
+**Default workflow (when this skill is not requested):**
+- **superpowers:executing-plans** — Referenced by **writing-plans** in plan `overview`; use for standard execution
 
 **Cursor tool mapping:** See **superpowers:using-superpowers** → `references/cursor-tools.md` for how other skills’ tool names map in Cursor.

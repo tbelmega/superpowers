@@ -10,6 +10,6 @@ Cursor does not expose Claude Code’s `Skill` tool. These examples **strengthen
 | File | Intent |
 |------|--------|
 | `superpowers-global.mdc.example` | Short always-on reminder to Read `SKILL.md` when a skill might apply. |
-| `superpowers-plans.mdc.example` | When editing implementation plans under `docs/plans/`, follow **writing-plans** / **executing-plans** / **subagent-driven-development** as appropriate—load each skill file first. |
+| `superpowers-plans.mdc.example` | When editing or executing plans under `docs/plans/`, follow **writing-plans** and **executing-plans**—load each `SKILL.md` first. Use **subagent-driven-development** only when you explicitly want Task workers + two-stage review. |
 
 Adjust `globs` and `alwaysApply` to taste. See Cursor docs for rule file format.

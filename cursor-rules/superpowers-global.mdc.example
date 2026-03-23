@@ -1,14 +1,41 @@
 ---
-description: Superpowers — load skills via Read on SKILL.md (Cursor has no Skill tool)
+description: Non-negotiable rules about workflow and coding
 alwaysApply: true
 ---
 
-# Superpowers in Cursor
+If a skill might apply, Read that skill’s SKILL.md from disk first; do not skip.
+If the skill applies, you must use it. Announce to the user "Using [skill-name] to [purpose]"
+Do not take a user's instruction to "proceed" or "execute" or "implement" a plan as suggestion to bypass the skill.
 
-When this conversation involves planning, debugging, executing a written implementation plan, TDD, code review, git worktrees, or finishing a branch: **before** editing files or giving procedural steps, **Read** the matching skill from the Superpowers plugin, e.g. `skills/<skill-name>/SKILL.md` (use the path from your agent skills list if shown).
+For multi-step work, you **MUST ALWAYS**:
+- Work test first. Don't add code until a failing test requires it.
+- Work outside-in: Tests against the module interface (API handler, service facade, GUI). Interface behavior drives internal implementation.
+- After a task is complete:
+    - Review the code against all applicable Cursor rules, Skills, docs, ADRs
+    - Run the module's "check" script if present. Otherwise run type checks and tests.
+    - Commit with a descriptive commit message, capitalized, imperative tense. No prefix. Project rules override this format.
 
-Announce after loading: **Using [skill-name] to [purpose]**.
+## Naming files, types, functions, variables
 
-Full tool mapping: `skills/using-superpowers/references/cursor-tools.md` in the Superpowers plugin (or your fork).
+- **No hollow role labels** — Do not use `helper`, `manager`, or similar vague job-title words in function names, variables, types, or file names. Name what the thing **does** or **represents** (e.g. `formatAwsCliError`, not `awsErrorHelper`; `createCloudWatchClient`, not `logsClientManager`).
+- **Files** — Avoid generic filenames such as `helpers.ts` or `manager.ts`; use domain-specific names so search and navigation stay clear.
 
-User and project instructions still override skill steps when they conflict.
+## Type Safety
+
+- **Always** add strong types to code, this is our first layer of correctness checks.
+- Do not work around type safety by using `any`, unchecked type casts or non-null assertions
+- Define narrow types and be intentional about nullable/non-nullable types
+
+## Comments and Documentation
+
+### When to Comment
+- **Explain purpose** - Why the code exists, not what it does
+- **Provide context** - Business logic, edge cases, or non-obvious behavior
+- **Document complexity** - Algorithms, workarounds, or non-standard patterns
+- **Clarify intent** - When the code might be misunderstood
+
+### When NOT to Comment
+- **Don't state the obvious** - Avoid comments that just restate what the code clearly shows
+- **Don't repeat function/variable names** - Function names should be self-documenting
+- **Don't repeat type information** - JSDoc should not duplicate TypeScript type signatures
+- **Don't document trivial logic** - Simple, straightforward code doesn't need comments
