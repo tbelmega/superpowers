@@ -4,8 +4,9 @@ alwaysApply: true
 ---
 
 If a skill might apply, Read that skill’s SKILL.md from disk first; do not skip.
-If the skill applies, you must use it. Announce to the user "Using [skill-name] to [purpose]"
-Do not take a user's instruction to "proceed" or "execute" or "implement" a plan as suggestion to bypass the skill.
+If the user asks for an implementation plan, you MUST Read writing-plans/SKILL.md
+If the user asks to follow / execute / implement / proceed with a plan, you MUST Read executing-plans/SKILL.md
+If a skill applies, you must use it. Announce to the user "Using [skill-name] to [purpose]".
 
 For multi-step work, you **MUST ALWAYS**:
 - Work test first. Don't add code until a failing test requires it.
