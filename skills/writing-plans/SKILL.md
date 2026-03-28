@@ -7,7 +7,7 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write implementation plans that an engineer with zero codebase context can follow. Plans are top-down, interface-driven, and test-first. Each task groups related work by user-visible behavior—never by file or layer. Save plans centrally under version control. Optimize plans for compatibility with Cursor plan mode.
+Write implementation plans that an engineer with zero codebase context can follow. Plans are top-down, interface-driven, and test-first. Each task groups related work by user-visible behavior—never by file or layer. Save plans centrally under version control.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
@@ -19,87 +19,67 @@ Write implementation plans that an engineer with zero codebase context can follo
 
 If the spec spans multiple independent subsystems, suggest breaking into separate plans—one per subsystem. Each plan should produce working, testable software on its own.
 
-## Plan Document Structure (Final File Order)
+## Plan Document Structure
 
-The **saved** plan file MUST begin with a **Cursor Plan Document** YAML frontmatter block, closed by `---` on its own line, then the markdown body. Nothing may appear before the opening `---`.
+The **saved** plan file is a markdown document: title, Goal, Architecture, Tech Stack, file map, and all tasks with nested detail.
 
-**Assembly workflow (do this order):**
+## Markdown Body Header
 
-1. Write the full markdown body first: title, implementer blockquote, Goal, Architecture, Tech Stack, file map, and all tasks with nested detail.
-2. Assign every **top-level** task a unique kebab-case **`id`** (stable slug, ASCII; match across YAML and body).
-3. On each top-level task’s checkbox line, add **`(id)`** immediately after the checkbox token and before the summary text (see Task Checklist Format).
-4. **Then** build the YAML frontmatter: `name`, `overview`, `todos` (one entry per top-level task), `isProject`. Prepend it so the file starts with `---`.
-
-This keeps strategy and narrative in the body while Cursor’s planner can read structured `todos`.
-
-## Cursor Plan Document Header (YAML Frontmatter)
-
-After the plan body is written and top-level task ids are fixed, prepend:
-
-```yaml
----
-name: [kebab-case slug; often matches filename feature segment, e.g. admin-api-admin-prefixes]
-overview: >
-  [1–2 sentences: what this plan delivers and main constraints; align with Goal + Architecture in the body.]
-  Before implementing, Read and follow superpowers:executing-plans (load `skills/executing-plans/SKILL.md` from the Superpowers plugin or workspace fork): review the plan, then complete each top-level task in order, including TDD, rules check, run checks, and git commit as written per task. Keep YAML `todos[].status` in sync with top-level checkboxes.
-todos:
-  - id: [same id as in parentheses on that task’s checkbox line]
-    content: "[Same one-line summary as on that top-level task line, without the (id) prefix]"
-    status: pending
-  # … one YAML entry per top-level task, in the same order as the plan
-isProject: false
----
-```
-
-**Field rules:**
-
-- **`name`** — Short, unique kebab-case identifier for the plan (not necessarily the full filename).
-- **`overview`** — MUST include two parts: (1) **Product/architecture intent** — 1–2 sentences aligned with **Goal** and **Architecture** in the body. (2) **Execution hook** — An explicit instruction to **Read and follow superpowers:executing-plans** before coding (path: `skills/executing-plans/SKILL.md` in the plugin or fork), covering whole-plan execution (review plan → tasks in order → TDD, checks, commits as written) and keeping YAML todo `status` aligned with top-level checkboxes. Cursor and other agents read `overview` in plan mode; this is the primary place to anchor execution discipline.
-- **`todos`** — **Only top-level tasks** (one Cursor todo per behavior-grouped task). Sub-bullets under a task are **not** separate YAML todos; their detail stays in the markdown body only.
-- **`content`** — The executable summary for that slice; the body underneath carries TDD steps, verify, commit, and nuance. Use YAML quoting if the string contains `:` or quotes.
-- **`status`** — Use `pending` for every todo when the plan is first saved. Executing agents update to `in_progress` / `completed` in lockstep with `[~]` / `[x]` on the matching top-level checkbox (and revert or fix if the checkbox and YAML disagree).
-- **`isProject`** — Default `false` for repo plans under `docs/plans/`. Set `true` only when the project’s Cursor workflow expects it.
-
-## Markdown Body Header (After Frontmatter)
-
-Immediately after the closing `---` of the YAML block, the markdown MUST continue with:
+The markdown document MUST begin with:
 
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For implementers:** Use **superpowers:executing-plans** for the full workflow (see YAML `overview` for the execution note). Top-level tasks use checkbox (`[ ]` / `[~]` / `[x]`) syntax with a `(todo-id)` matching YAML `todos[].id`.
+> **For implementers:** Use **superpowers:executing-plans** for the full workflow. Top-level tasks use checkbox (`[ ]` / `[~]` / `[x]`) syntax.
 
 **Goal:** [One sentence describing what this builds]
 
-**Architecture:** [2-3 sentences about approach]
-
 **Tech Stack:** [Key technologies/libraries]
+
+## Capabilities
+
+[What does this system need to do? State the functional requirements in plain terms — no implementation detail, no layer names. A short bulleted list or prose paragraph.]
+
+## Component Architecture
+
+[What are the building blocks? Name each service, module, or major abstraction with one sentence on its responsibility.]
+
+## Interactions
+
+[How do the components communicate? Describe the data flow: what triggers what, what calls what, what events flow between components.]
 
 ---
 ```
 
-(The trailing `---` here is an optional markdown horizontal rule before the next section; it is **not** part of the YAML frontmatter.)
+## Architecture Narrative (Capabilities → Components → Interactions)
+
+Before the task list, write three sections that move from abstract to concrete. These exist for human review — a reviewer should be able to read them and understand *what* is being built and *why* before evaluating the tasks.
+
+- **Capabilities** — What does this system need to do? State the functional requirements in plain terms. No implementation detail, no layer names. Answer: "what can a user or caller do with this?"
+- **Components** — What are the building blocks? Name the key services, modules, or major abstractions. One sentence per component describing its sole responsibility. Answer: "what are the named things in this design?"
+- **Interactions** — How do the components communicate? Describe the data flow: what triggers what, what calls what, what events are emitted and consumed. Answer: "how does data move through the system?"
+
+**Write these before the file map and task list.** They are the plan's human review surface — readable without codebase knowledge, verifiable by a product manager or architect.
 
 ## Task Checklist Format
 
-**Top-level tasks** (each maps to one Cursor YAML todo):
+**Top-level tasks:**
 
-- One checkbox line per top-level task, with **`(id)`** right after the brackets:  
-  `- [ ] (my-task-id) Short one-line summary of this behavior slice`
-- `[~]` / `[x]` replace `[ ]` as work progresses; **keep the same `(id)`** on that line.
+- One checkbox line per top-level task:
+  `- [ ] Short one-line summary of this behavior slice`
+- `[~]` / `[x]` replace `[ ]` as work progresses.
 
 **Subtasks** (nested steps under a top-level task: tests, implementation notes, rules check, run checks, commit):
 
-- Use `- [ ]` / `[~]` / `[x]` on each subtask line as today.
-- Do **not** add a Cursor todo or `(id)` for subtasks—execution detail stays in the body and refers to the parent task’s id when useful.
+- Use `- [ ]` / `[~]` / `[x]` on each subtask line.
 
 **Statuses:**
 
-- `[ ]` — not started (YAML: `pending`)
-- `[~]` — in progress (YAML: `in_progress`)
-- `[x]` — done (YAML: `completed`)
+- `[ ]` — not started
+- `[~]` — in progress
+- `[x]` — done
 
-Every task and subtask MUST keep a one-line summary on its checkbox line where applicable; top-level lines always include `(id)`.
+Every task and subtask MUST keep a one-line summary on its checkbox line.
 
 ## Dependencies First
 
@@ -174,6 +154,35 @@ Map which files will be created or modified and their responsibilities. Lock dec
 | One task per user-visible behavior | Split one behavior across tasks with intermediate broken states |
 | Keep tests at the interface | Add unit tests for internal classes just because they exist |
 
+## Issue Tracker Tickets
+
+After the task list, append a **Tickets** section to the plan with a flat list of ticket titles for the product manager or team lead to create in their issue tracker.
+
+**Each ticket title is a single descriptive line — no body, no sub-items, no extra context.**
+
+**What makes a valid ticket:**
+
+- It describes a **vertical feature slice** — something a user can actually experience. A feature only exists from a user's perspective when it has a UI and works end-to-end (real backend, no mocked data or placeholder UI).
+- It is **atomic** — not meaningfully divisible into smaller shippable tickets.
+
+**Allowed exceptions (rare):**
+
+- **Chore** — Purely technical work with no user-visible outcome (e.g. "Migrate database to Postgres 16"). Label it clearly so it isn't confused for a feature.
+- **Integration endpoint** — Exposes an API for a technical third-party integrator where the "user" is a developer and no UI is expected (e.g. "Expose webhook API for order status events").
+
+**Format:**
+
+```markdown
+## Tickets
+
+- User can log in with Google
+- User can invite team members by email
+- Admin can view a list of all workspaces
+- Chore: upgrade authentication library to v3
+```
+
+**Ticket IDs:** The user may later assign IDs from their issue tracker and ask you to map those IDs to the planned commit messages in the plan. When that happens, update each pre-generated commit message in the task list to reference the relevant ticket ID.
+
 ## Plan Review Loop
 
 After writing the complete plan:
@@ -200,17 +209,14 @@ Once approved, implementation follows **superpowers:executing-plans** — the im
 | Element | Requirement |
 |---------|-------------|
 | Save location | `docs/plans/YYYY-MM-DD-<feature>.md` |
-| File start | Cursor YAML frontmatter (`name`, `overview`, `todos`, `isProject`), then markdown body |
-| `overview` | Goal/architecture summary **plus** explicit **superpowers:executing-plans** execution hook (see Cursor Plan Document Header) |
-| Cursor `todos` | One entry per **top-level** task; `id` matches `(id)` on that task’s checkbox line; `content` matches the summary; new plans: all `status: pending` |
-| Task checklist | Top-level: `[ ] (id) summary` then `[~]`/`[x]` with same `(id)`. Subtasks: `[ ]`/`[~]`/`[x]` only, no `(id)` |
+| Architecture narrative | Three sections before the task list: **Capabilities** (what it does), **Components** (what the building blocks are), **Interactions** (how they communicate) |
+| Task checklist | Top-level: `[ ] summary` then `[~]`/`[x]`. Subtasks: `[ ]`/`[~]`/`[x]` |
 | Dependencies | Dedicated first task if new libraries needed; early task for shared types/contracts when needed |
 | Feature flag | If wanted: first task after dependencies; other tasks conditional on flag |
 | Cross-cutting (API) | If spec silent: ask about validation, auth, logging; if yes, check codebase for patterns |
 | Task order | Test first → implement → verify → rules check → run checks → commit |
 | Task grouping | By behavior, not by file or layer |
 | Test granularity | Integration at interface; minimal unit tests; consider fast-check for pure functions with many input combinations |
-| Execution sync | Keep each YAML todo `status` aligned with its top-level checkbox |
 
 ## Common Mistakes
 

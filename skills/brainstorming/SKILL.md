@@ -23,13 +23,28 @@ You MUST create a task for each of these items and complete them in order:
 
 1. **Explore project context** — check files, docs, recent commits
 2. **Offer visual companion** (if topic will involve visual questions) — this is its own message, not combined with a clarifying question. See the Visual Companion section below.
-3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
-4. **Propose 2-3 approaches** — with trade-offs and your recommendation
-5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
-7. **Spec review loop** — dispatch spec-document-reviewer subagent with precisely crafted review context (never your session history); fix issues and re-dispatch until approved (max 3 iterations, then surface to human)
-8. **User reviews written spec** — ask user to review the spec file before proceeding
-9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+3. **Create spec draft file** — `docs/specs/YYYY-MM-DD-<topic>-design.md` (user override path if they prefer) with a clear **Status: Draft / not for implementation** at the top. See **Incremental spec persistence** below.
+4. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria; persist answers in the spec as you go
+5. **Propose 2-3 approaches** — with trade-offs and your recommendation; record in the spec and reconcile earlier sections if choices change prior assumptions
+6. **Present design** — in sections scaled to their complexity, get user approval after each section; mirror approved sections in the spec
+7. **Finalize spec** — coherence pass: no contradictions, stale options removed or clearly labeled; replace draft status with final wording; commit
+8. **Spec review loop** — dispatch spec-document-reviewer subagent with precisely crafted review context (never your session history); fix issues and re-dispatch until approved (max 3 iterations, then surface to human)
+9. **User reviews written spec** — ask user to review the spec file before proceeding
+10. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+
+## Incremental spec persistence
+
+**Why:** If the session crashes, the spec on disk preserves progress; a new session can continue from the file.
+
+**When to create the file:** Right after project context (and the visual-companion offer if applicable), **before** the first clarifying question. Use the path from the checklist; user preferences for location override the default.
+
+**When to update:** After each substantial milestone—answered question that changes requirements, chosen approach, each design section the user approves. Prefer **saving to disk** on a steady cadence over keeping state only in chat.
+
+**Append-only is insufficient:** If a later answer **contradicts or narrows** an earlier assumption, **edit or replace** the affected parts of the spec so the document reads as **one coherent current truth**. Do not stack conflicting bullets (e.g. old "we will use X" plus new "we will use Y") unless you intentionally keep a short **Decision log** subsection and the main body reflects only the final decision.
+
+**Finalize (checklist step 7):** Before commit, re-read the whole file; remove draft-only boilerplate or replace with a brief **Status: Ready for review**; ensure no orphaned alternatives presented as current plan.
+
+**Commits:** Incremental saves are for durability; **commit** when the spec is finalized after design approval (and again after spec-review/user-review edits if needed). Avoid noisy mid-interview commits unless the human asks for them.
 
 ## Process Flow
 
@@ -38,11 +53,12 @@ digraph brainstorming {
     "Explore project context" [shape=box];
     "Visual questions ahead?" [shape=diamond];
     "Offer Visual Companion\n(own message, no other content)" [shape=box];
+    "Create spec draft\n(update file throughout)" [shape=box];
     "Ask clarifying questions" [shape=box];
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
-    "Write design doc" [shape=box];
+    "Finalize spec + commit" [shape=box];
     "Spec review loop" [shape=box];
     "Spec review passed?" [shape=diamond];
     "User reviews spec?" [shape=diamond];
@@ -50,23 +66,24 @@ digraph brainstorming {
 
     "Explore project context" -> "Visual questions ahead?";
     "Visual questions ahead?" -> "Offer Visual Companion\n(own message, no other content)" [label="yes"];
-    "Visual questions ahead?" -> "Ask clarifying questions" [label="no"];
-    "Offer Visual Companion\n(own message, no other content)" -> "Ask clarifying questions";
+    "Visual questions ahead?" -> "Create spec draft\n(update file throughout)" [label="no"];
+    "Offer Visual Companion\n(own message, no other content)" -> "Create spec draft\n(update file throughout)";
+    "Create spec draft\n(update file throughout)" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
-    "Write design doc" -> "Spec review loop";
+    "User approves design?" -> "Finalize spec + commit" [label="yes"];
+    "Finalize spec + commit" -> "Spec review loop";
     "Spec review loop" -> "Spec review passed?";
     "Spec review passed?" -> "Spec review loop" [label="issues found,\nfix and re-dispatch"];
     "Spec review passed?" -> "User reviews spec?" [label="approved"];
-    "User reviews spec?" -> "Write design doc" [label="changes requested"];
+    "User reviews spec?" -> "Finalize spec + commit" [label="changes requested"];
     "User reviews spec?" -> "Invoke writing-plans skill" [label="approved"];
 }
 ```
 
-**The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans.
+Throughout clarifying questions, approaches, and design sections: **keep the spec file on disk in sync** (see Incremental spec persistence). **The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans.
 
 ## The Process
 
@@ -112,13 +129,12 @@ digraph brainstorming {
 
 **Documentation:**
 
-- Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
-  - (User preferences for spec location override this default)
+- The spec file should already exist and be mostly complete from incremental updates; **finalize** it (coherence, draft status, contradictions) then commit to `docs/specs/YYYY-MM-DD-<topic>-design.md` (or user-preferred path)
 - Use elements-of-style:writing-clearly-and-concisely skill if available
-- Commit the design document to git
+- Commit after finalize and after any later edits from spec review or user review
 
 **Spec Review Loop:**
-After writing the spec document:
+After the finalized spec is committed:
 
 1. Dispatch spec-document-reviewer subagent (see spec-document-reviewer-prompt.md)
 2. If Issues Found: fix, re-dispatch, repeat until Approved
@@ -127,7 +143,7 @@ After writing the spec document:
 **User Review Gate:**
 After the spec review loop passes, ask the user to review the written spec before proceeding:
 
-> "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
+> "Spec finalized and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
 
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
@@ -143,6 +159,7 @@ Wait for the user's response. If they request changes, make them and re-run the 
 - **YAGNI ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling
 - **Incremental validation** - Present design, get approval before moving on
+- **Single source of truth in the spec** - Update the file as you learn; when new answers override old ones, revise earlier text (or use an explicit decision log), don't only append conflicting content
 - **Be flexible** - Go back and clarify when something doesn't make sense
 
 ## Visual Companion
