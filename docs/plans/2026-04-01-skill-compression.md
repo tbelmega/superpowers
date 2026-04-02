@@ -58,14 +58,14 @@ The implementer uses the approved design spec to review each skill and supportin
 
 ## Task 2: Reduce default-load and low-branching skills without weakening discovery or core rules
 
-- [ ] Add or extend a failing verification step for this slice that captures the intended compression targets for `using-superpowers`, `coding-standards`, and `research` while preserving trigger quality and mandatory behavior.
-- [ ] Rewrite `skills/using-superpowers/SKILL.md` to keep the loading mandate and discovery behavior intact while trimming repetition, reducing persuasive overhead, and deferring non-essential reference detail.
-- [ ] Rewrite `skills/coding-standards/SKILL.md` and `skills/research/SKILL.md` to keep their rules intact while making instructions and expected agent output more concise.
-- [ ] Review any supporting references touched by this slice and defer or compress them only if expected context usage improves.
-- [ ] Verify the revised skills still preserve clear triggers, hard gates, and artifact requirements.
-- [ ] Review changes against project-specific rules and summarize any violations.
-- [ ] Run relevant checks for touched files, such as markdown/reference validation and any project check command that applies.
-- [ ] Commit with message: `Compress default-load skill guidance`
+- [x] Add or extend a failing verification step for this slice that captures the intended compression targets for `using-superpowers`, `coding-standards`, and `research` while preserving trigger quality and mandatory behavior.
+- [x] Rewrite `skills/using-superpowers/SKILL.md` to keep the loading mandate and discovery behavior intact while trimming repetition, reducing persuasive overhead, and deferring non-essential reference detail.
+- [x] Rewrite `skills/coding-standards/SKILL.md` and `skills/research/SKILL.md` to keep their rules intact while making instructions and expected agent output more concise.
+- [x] Review any supporting references touched by this slice and defer or compress them only if expected context usage improves.
+- [x] Verify the revised skills still preserve clear triggers, hard gates, and artifact requirements.
+- [x] Review changes against project-specific rules and summarize any violations.
+- [x] Run relevant checks for touched files, such as markdown/reference validation and any project check command that applies.
+- [x] Commit with message: `Compress default-load skill guidance`
 
 ## Task 3: Compress design and planning workflow skills while preserving approval gates
 

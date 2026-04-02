@@ -39,6 +39,39 @@ const requiredSupportingFiles = [
   "skills/writing-plans/plan-document-reviewer-prompt.md",
 ];
 
+const task2Targets = [
+  {
+    path: "skills/using-superpowers/SKILL.md",
+    maxWords: 650,
+    mustInclude: [
+      "If a skill might apply, load it before responding.",
+      "User instructions take precedence over skills.",
+      "Process skills first",
+    ],
+    mustExclude: ["digraph skill_flow", "This is not negotiable."],
+  },
+  {
+    path: "skills/coding-standards/SKILL.md",
+    maxWords: 260,
+    mustInclude: [
+      "Declare explicit types for function signatures.",
+      "Comment why, not what.",
+      "Follow existing naming conventions.",
+    ],
+    mustExclude: [],
+  },
+  {
+    path: "skills/research/SKILL.md",
+    maxWords: 500,
+    mustInclude: [
+      "Write the findings to `docs/research/YYYY-MM-DD-<topic>.md`.",
+      "Trace data flow end-to-end.",
+      "Ask the user to review the document before planning.",
+    ],
+    mustExclude: ["## Quick Reference", "## Common Mistakes"],
+  },
+];
+
 const errors = [];
 
 function assertExists(relPath) {
@@ -84,6 +117,27 @@ for (const dir of requiredSkillDirs) {
 
 for (const relPath of requiredSupportingFiles) {
   assertExists(relPath);
+}
+
+for (const target of task2Targets) {
+  const content = fs.readFileSync(path.join(root, target.path), "utf8");
+  const words = content.trim().split(/\s+/).length;
+
+  if (words > target.maxWords) {
+    errors.push(`${target.path} exceeds ${target.maxWords} words (${words})`);
+  }
+
+  for (const snippet of target.mustInclude) {
+    if (!content.includes(snippet)) {
+      errors.push(`${target.path} is missing required snippet: ${snippet}`);
+    }
+  }
+
+  for (const snippet of target.mustExclude) {
+    if (content.includes(snippet)) {
+      errors.push(`${target.path} still includes banned snippet: ${snippet}`);
+    }
+  }
 }
 
 if (errors.length > 0) {
