@@ -69,13 +69,13 @@ The implementer uses the approved design spec to review each skill and supportin
 
 ## Task 3: Compress design and planning workflow skills while preserving approval gates
 
-- [ ] Add or extend a failing verification step for this slice covering `brainstorming`, `writing-plans`, `executing-plans`, `using-git-worktrees`, and `verification-before-completion`.
-- [ ] Rewrite each core `SKILL.md` to preserve required approval gates, plan/spec persistence, workflow ordering, and completion verification while trimming repeated rationale and overly verbose agent phrasing.
-- [ ] Review and compress branch-specific supporting files in these directories, including reviewer prompts and visual-companion guidance, keeping only detail that is actually needed when that branch is taken.
-- [ ] Verify that required handoff points, review requests, and persistent-document expectations are still explicit in the rewritten files.
-- [ ] Review changes against project-specific rules and summarize any violations.
-- [ ] Run relevant checks for touched files, such as markdown/reference validation and any project check command that applies.
-- [ ] Commit with message: `Compress planning workflow skills`
+- [x] Add or extend a failing verification step for this slice covering `brainstorming`, `writing-plans`, `executing-plans`, `using-git-worktrees`, and `verification-before-completion`.
+- [x] Rewrite each core `SKILL.md` to preserve required approval gates, plan/spec persistence, workflow ordering, and completion verification while trimming repeated rationale and overly verbose agent phrasing.
+- [x] Review and compress branch-specific supporting files in these directories, including reviewer prompts and visual-companion guidance, keeping only detail that is actually needed when that branch is taken.
+- [x] Verify that required handoff points, review requests, and persistent-document expectations are still explicit in the rewritten files.
+- [x] Review changes against project-specific rules and summarize any violations.
+- [x] Run relevant checks for touched files, such as markdown/reference validation and any project check command that applies.
+- [x] Commit with message: `Compress planning workflow skills`
 
 ## Task 4: Compress implementation and review discipline skills while preserving enforcement strength
 

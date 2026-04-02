@@ -72,6 +72,83 @@ const task2Targets = [
   },
 ];
 
+const task3Targets = [
+  {
+    path: "skills/brainstorming/SKILL.md",
+    maxWords: 1100,
+    mustInclude: [
+      "Do not implement before presenting a design and getting user approval.",
+      "Ask one question at a time.",
+      "Status: Draft / not for implementation",
+      "writing-plans",
+    ],
+    mustExclude: ["## Anti-Pattern", "```dot"],
+  },
+  {
+    path: "skills/writing-plans/SKILL.md",
+    maxWords: 1200,
+    mustInclude: [
+      "`docs/plans/YYYY-MM-DD-<feature-name>.md`",
+      "Top-level tasks use checkbox",
+      "rules check",
+      "`git commit`",
+    ],
+    mustExclude: ["## Quick Reference", "## Common Mistakes"],
+  },
+  {
+    path: "skills/executing-plans/SKILL.md",
+    maxWords: 500,
+    mustInclude: [
+      "Follow every plan step in order.",
+      "Never start implementation on main/master branch without explicit user consent.",
+      "finishing-a-development-branch",
+    ],
+    mustExclude: ["## Optional: Task workers and two-stage review"],
+  },
+  {
+    path: "skills/using-git-worktrees/SKILL.md",
+    maxWords: 500,
+    mustInclude: [
+      "Prefer `.worktrees/`, then `worktrees/`, then any repo instruction, then ask the user.",
+      "`git check-ignore`",
+      "If baseline tests fail, report that and ask whether to proceed.",
+    ],
+    mustExclude: ["## Example Workflow", "## Quick Reference"],
+  },
+  {
+    path: "skills/verification-before-completion/SKILL.md",
+    maxWords: 400,
+    mustInclude: [
+      "NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE",
+      "Evidence before claims.",
+      "Run the command that proves the claim in this message.",
+    ],
+    mustExclude: ["## Rationalization Prevention", "## Why This Matters"],
+  },
+  {
+    path: "skills/brainstorming/visual-companion.md",
+    maxWords: 900,
+    mustInclude: [
+      "would the user understand this better by seeing it than reading it?",
+      "scripts/start-server.sh",
+      "Read `$SCREEN_DIR/.events`",
+    ],
+    mustExclude: ["## CSS Classes Available", "## Design Tips"],
+  },
+  {
+    path: "skills/brainstorming/spec-document-reviewer-prompt.md",
+    maxWords: 180,
+    mustInclude: ["Approved | Issues Found"],
+    mustExclude: ["## Calibration"],
+  },
+  {
+    path: "skills/writing-plans/plan-document-reviewer-prompt.md",
+    maxWords: 300,
+    mustInclude: ["Approved | Issues Found", "rules check, run check script, git commit"],
+    mustExclude: ["## Calibration"],
+  },
+];
+
 const errors = [];
 
 function assertExists(relPath) {
@@ -120,6 +197,27 @@ for (const relPath of requiredSupportingFiles) {
 }
 
 for (const target of task2Targets) {
+  const content = fs.readFileSync(path.join(root, target.path), "utf8");
+  const words = content.trim().split(/\s+/).length;
+
+  if (words > target.maxWords) {
+    errors.push(`${target.path} exceeds ${target.maxWords} words (${words})`);
+  }
+
+  for (const snippet of target.mustInclude) {
+    if (!content.includes(snippet)) {
+      errors.push(`${target.path} is missing required snippet: ${snippet}`);
+    }
+  }
+
+  for (const snippet of target.mustExclude) {
+    if (content.includes(snippet)) {
+      errors.push(`${target.path} still includes banned snippet: ${snippet}`);
+    }
+  }
+}
+
+for (const target of task3Targets) {
   const content = fs.readFileSync(path.join(root, target.path), "utf8");
   const words = content.trim().split(/\s+/).length;
 
