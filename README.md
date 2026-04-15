@@ -12,7 +12,11 @@ Once it's teased a spec out of the conversation, it shows it to you in chunks sh
 
 After you've signed off on the design, your agent puts together an implementation plan that's clear enough for an enthusiastic junior engineer with poor taste, no judgement, no project context, and an aversion to testing to follow. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and DRY. 
 
-Next up, once you say "go", it launches a *subagent-driven-development* process, having agents work through each engineering task, inspecting and reviewing their work, and continuing forward. It's not uncommon for Claude to be able to work autonomously for a couple hours at a time without deviating from the plan you put together.
+That plan lives in `docs/plans/` as a human-auditable markdown file with explicit checkbox state, so progress stays visible and recoverable even if the agent crashes or the session gets interrupted. Harness-native plan/spec modes are optional helpers at most, not the source of truth.
+
+Next up, once you say "go", `executing-plans` runs the plan. Worker mode is preferred because it keeps the orchestrator context small and lets each fresh worker focus on one task, but some harnesses require the user to explicitly authorize worker delegation in chat before the agent can use it. When worker mode is unavailable or not authorized, the workflow stops and asks whether to rerun in worker mode or execute directly.
+
+The plan constrains goals, boundaries, ordering, and verification, but it does not try to precompute every implementation detail. Within a task's scope, the executing agent is expected to use local engineering judgment: simplify design, reduce duplication, extract shared code, and improve code hygiene without silently expanding into future-task work.
 
 There's a bunch more to it, but that's the core of the system. And because the skills trigger automatically, you don't need to do anything special. Your coding agent just has Superpowers.
 
@@ -120,9 +124,9 @@ Start a new session in your chosen platform and ask for something that should tr
 
 2. **using-git-worktrees** - Activates after design approval. Creates isolated workspace on new branch, runs project setup, verifies clean test baseline.
 
-3. **writing-plans** - Activates with approved design. Breaks work into bite-sized tasks (2-5 minutes each). Every task has exact file paths, complete code, verification steps.
+3. **writing-plans** - Activates with approved design. Saves a markdown plan under `docs/plans/` with visible checkbox state, execution-mode guidance, verification steps, owned files, shared touch points, and stop conditions.
 
-4. **subagent-driven-development** or **executing-plans** - Activates with plan. Dispatches fresh subagent per task with two-stage review (spec compliance, then code quality), or executes in batches with human checkpoints.
+4. **executing-plans** - Activates with plan. Uses the markdown plan as the source of truth, chooses worker mode or direct mode in a preflight step, keeps plan checkboxes in sync with progress, and pauses to amend the plan if implementation reveals missing work or a better structure beyond local task scope.
 
 5. **test-driven-development** - Activates during implementation. Enforces RED-GREEN-REFACTOR: write failing test, watch it fail, write minimal code, watch it pass, commit. Deletes code written before tests.
 
@@ -149,14 +153,14 @@ Optional examples in [`cursor-rules/`](cursor-rules/README.md) (`*.mdc.example`)
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **writing-plans** - Detailed implementation plans
-- **executing-plans** - Batch execution with checkpoints
+- **writing-plans** - Markdown-first implementation plans that capture goals, boundaries, ordering, verification, and execution mode without freezing every implementation detail
+- **executing-plans** - Canonical plan executor; prefers worker mode when explicitly authorized, otherwise executes directly or stops for clarification
 - **dispatching-parallel-agents** - Concurrent subagent workflows
 - **requesting-code-review** - Pre-review checklist
 - **receiving-code-review** - Responding to feedback
 - **using-git-worktrees** - Parallel development branches
 - **finishing-a-development-branch** - Merge/PR decision workflow
-- **subagent-driven-development** - Fast iteration with two-stage review (spec compliance, then code quality)
+- **subagent-driven-development** - Compatibility reference for harness-specific worker orchestration details
 
 **Meta**
 - **writing-skills** - Create new skills following best practices (includes testing methodology)
@@ -166,8 +170,17 @@ Optional examples in [`cursor-rules/`](cursor-rules/README.md) (`*.mdc.example`)
 
 - **Test-Driven Development** - Write tests first, always
 - **Systematic over ad-hoc** - Process over guessing
+- **Markdown plans as source of truth** - Progress should be visible, auditable, and resumable across harnesses
+- **Workers when possible** - Smaller orchestrator and worker contexts usually improve outcomes and reduce token cost
+- **Plan the invariants, not every detail** - Plans should lock down intent, boundaries, ordering, and verification while leaving room for local engineering judgment inside task scope
 - **Complexity reduction** - Simplicity as primary goal
 - **Evidence over claims** - Verify before declaring success
+
+## Observe And Adjust
+
+- **Worker-mode prompting friction** - The current default is biased toward `worker_preferred`, but execution may still stop and ask the user to choose worker mode or direct mode. If that creates too much friction in day-to-day use, relax the mode-selection rules or make the expected prompt pattern more explicit in your harness-specific setup.
+- **Plan over-specification risk** - The current plan format asks for owned files, shared touch points, verification commands, commit messages, and handoff details. That improves delegated execution, but it can also make plans too rigid or too expensive to maintain. If plans start feeling like brittle scripts instead of high-signal execution guides, remove detail that is not protecting an actual invariant, dependency, or verification requirement.
+- **Cross-harness prompt patterns** - Some of the current rerun/authorization wording is easiest to apply in chat-driven harnesses like Codex. If another harness supports worker delegation more natively, keep the same underlying workflow but adapt the user-facing prompt language so it fits that environment instead of forcing a Codex-shaped interaction.
 
 Read more: [Superpowers for Claude Code](https://blog.fsck.com/2025/10/09/superpowers/)
 
