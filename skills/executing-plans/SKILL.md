@@ -16,6 +16,7 @@ description: Use when you have a written implementation plan to execute and need
 - If the harness offers a native plan or spec mode, treat it only as an optional helper or mirror and do not let it replace the saved markdown plan or hide execution state from the user.
 - Treat the plan as the source of truth for goals, boundaries, ordering, and verification, not as a ban on better local engineering decisions inside the assigned task scope.
 - In direct mode, stop and ask the user instead of guessing when blocked. In worker mode, stop and escalate to the orchestrator instead of guessing.
+- Monitor for context pressure using any harness signal that is available and fallback heuristics when it is not. If the session is becoming too degraded to continue reliably, stop at the nearest safe boundary, update the plan, write a concise handoff, and suggest resuming in a fresh session.
 - Never start implementation on main/master branch without explicit user consent.
 
 ## Execution Principle
@@ -85,8 +86,9 @@ Before editing code or running plan steps:
 2. Mark the current top-level task in progress.
 3. Execute every substep in order in the selected mode and capture verification evidence.
 4. If execution reveals a better structure, missing work, or a needed scope change beyond the task's allowed local judgment, have the orchestrator pause to amend the plan or ask the user before continuing.
-5. Mark the task complete only after all required verification and commit steps finish.
-6. After all tasks, use `finishing-a-development-branch`.
+5. If context pressure becomes high, finish the current safe boundary if possible, update the plan, write a resumable handoff with current state and the next recommended prompt, and suggest continuing in a fresh session.
+6. Mark the task complete only after all required verification and commit steps finish.
+7. After all tasks, use `finishing-a-development-branch`.
 
 ## Integration
 

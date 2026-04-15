@@ -60,6 +60,7 @@ For Codex plans, make the worker prompt explicit:
 - If a task needs broader scope than a small supporting edit, the plan should either name that scope explicitly or instruct worker executors to stop and escalate to the orchestrator and direct executors to stop and ask the user.
 - Workers should return a short handoff summary with files changed, shared types or contracts added or modified, commands run, verification results, plan updates made, and commit SHA or blocker.
 - If delegated execution is intended but the user has not explicitly authorized worker mode in the current chat, the orchestrator must stop and ask the user for that authorization instead of executing locally.
+- Plans should include enough state and handoff structure that execution can pause cleanly and resume in a fresh session when context pressure gets too high.
 
 ## Task Rules
 
@@ -104,6 +105,7 @@ Every top-level task should include, in a concise but explicit form:
 
 The task text may tell the worker to read the full plan for sequencing and background context, but it must also state that doing so does not expand file ownership or authorize future-task implementation.
 The task text should leave room for better local implementation choices inside the task's scope while making clear when the worker must stop and escalate to the orchestrator before widening scope.
+When useful, the plan should also define resumable handoff contents for context-pressure pauses: current task state, next task, files changed, shared contracts or types added, verification status, blockers or open decisions, and a prompt shape for continuing in a fresh session.
 
 ## Review And Handoff
 
