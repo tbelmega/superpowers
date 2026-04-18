@@ -119,7 +119,7 @@ Each task follows this shape:
 The last subtasks of every task MUST be:
 
 1. **Check rules** — Review changes against project-specific rules (ADRs, Cursor rules, etc.). Output a summary of rules checked and any violations.
-2. **Run checks** — Execute the `check` script on all touched modules (or run typechecks and tests for affected modules if no dedicated script exists).
+2. **Run checks** — Execute the `check` script on all touched modules (or run typechecks and tests **with minimal log output** for affected modules if no dedicated script exists).
 3. **Commit** — `git commit` if checks pass. Pre-generate the commit message into the task, following the commit message rules. (NO PREFIXES feat/fix/chore etc)
 
 ## Planning Rules
