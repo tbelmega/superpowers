@@ -64,6 +64,9 @@ For Codex plans, make the worker prompt explicit:
 
 ## Task Rules
 
+- Dependencies and shared contracts before feature behavior.
+- If any task requires new third-party libraries, add a dedicated first task to add all dependencies and run the project's install command
+- If the work introduces or changes shared types, API contracts, or schemas used across modules, add an early task (after the dependency-install task if present, before dependent behavior tasks) so downstream tasks target a stable interface.
 - Group work by user-visible behavior, not by file or layer.
 - Use top-level tasks for vertical slices and checkbox subtasks for the steps inside each slice.
 - Make each top-level task executable from the plan plus repo state without relying on prior chat history.
@@ -71,6 +74,53 @@ For Codex plans, make the worker prompt explicit:
 - End each task with rules check, run checks, and `git commit`.
 - Add dependency installation first when new packages are needed.
 - Add early shared-contract work when later tasks depend on it.
+
+## Feature Flags
+
+For new features, the spec may require a feature flag (invisible by default, enable in select envs for testing). For multi-tenant SaaS, feature config may also be needed (enable/disable per tenant based on contract). **If the spec doesn't mention it, seek clarification before planning**—did the human not think of it, or do they not want it?
+
+If a feature flag (or per-tenant feature config) is wanted:
+- **First task after dependencies** — Add the feature flag infrastructure and wiring.
+- **Other tasks** — Implement behavior conditional on the flag (and per-tenant config if applicable). New code is gated; existing behavior unchanged when flag/config is off.
+
+## Cross-cutting Concerns (API Features)
+
+For plans that add or change API endpoints: if the spec doesn't mention them, **ask whether any of these should be added** — input validation, authentication, logging for troubleshooting.
+If the user wants any of these: **check the codebase first** for established patterns and libraries (validation schemas, auth middleware, logging). Add tasks that follow existing conventions.
+
+## Top-Down, Interface-Driven Structure
+
+Tasks are written top-down:
+
+1. **Start with the interface** — API endpoint, service facade, UI component, exported library function. The public surface drives the design.
+2. **Simple first, then complex** — Bite-sized iterations. Add minimal behavior, verify, then extend.
+3. **Inner layers follow the interface** — Don't add files for inner layers before they're used by the public API. Internal structure follows established codebase patterns but is driven by the interface.
+4. **Test first (TDD)** — Each task definition starts with the test. Instruct the executing agent to write a failing test against the interface, then implement what's needed to make it pass. Keeps tests lean and focused on observable behavior.
+
+## Test Granularity
+
+- **Integration tests preferred** — Target the public surface: HTTP endpoints, UI components, exported functions. Avoid unit tests per internal file (use case, repository, client, middleware).
+- **Exceptions** — Pure infrastructure with no public surface (e.g. a secrets client) may have unit tests for meaningful validation/error logic. Domain logic with many branches can be extracted into pure functions and unit tested, while integration tests cover the main flows.
+- **Coverage** — The type system plus integration tests provide sufficient coverage for internal wiring.
+- **Property-based tests (fast-check)** — After building a task with regular TDD, consider adding property-based tests if the code is suited: pure functions, invariants (e.g. round-trip serialization, algebraic laws), or transformations with many equivalence classes. Especially valuable when input combinations are numerous and unit tests may miss edge cases.
+
+## Task Structure
+
+Each task follows this shape:
+
+1. **Add or extend a test** — Write failing assertion(s) against the public interface first. Instruct the executing agent to follow project-specific rules for writing tests.
+2. **Implement everything needed to pass** — Across as many files as required (middleware, use case, repository, client, wiring).
+3. **Complete when checks pass** — Run the project's `check` script (or equivalent) on touched modules.
+
+**Group by behavior, not by file.** A task like "Add WorkOS provisioning to tenant creation" covers use case, repository, client, shared types, and wiring—driven by one set of test assertions. If complex, iterate: start with a simple test that needs little code, then extend it or add more tests in baby steps.
+
+## Verify and Commit After Each Task
+
+The last subtasks of every task MUST be:
+
+1. **Check rules** — Review changes against project-specific rules (ADRs, Cursor rules, etc.). Output a summary of rules checked and any violations.
+2. **Run checks** — Execute the `check` script on all touched modules (or run typechecks and tests for affected modules if no dedicated script exists).
+3. **Commit** — `git commit` if checks pass. Pre-generate the commit message into the task, following the commit message rules. (NO PREFIXES feat/fix/chore etc)
 
 ## Planning Rules
 
@@ -86,7 +136,7 @@ For Codex plans, make the worker prompt explicit:
 - Prefer integration tests; use unit tests only when they add clear value.
 - If the spec is silent on feature flags for a new feature, ask before planning.
 - For API changes, ask about validation, authentication, and troubleshooting logs if the spec does not cover them.
-- Append a flat `Tickets` section after the tasks.
+- Append a flat `Tickets` section after the tasks. These tickets summarize and break down only the work already covered by the plan so it can be represented and tracked on a Kanban board or similar system; they are not follow-up tasks or post-plan backlog items.
 
 ## Task Shape
 
