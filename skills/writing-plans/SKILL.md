@@ -59,8 +59,9 @@ For Codex plans, make the worker prompt explicit:
 - Reading the full plan does not expand edit scope by itself.
 - Each task should specify owned files, allowed shared files, required verification commands, and an exact commit message.
 - The owned-files list defines the task's primary edit scope, not an absolute ban on necessary code-hygiene edits.
-- Small supporting edits outside owned files are allowed only when necessary to complete the task cleanly, reduce duplication, extract shared code, or maintain coherent contracts without implementing future-task work.
-- If a task needs broader scope than a small supporting edit, the plan should either name that scope explicitly or instruct worker executors to stop and escalate to the orchestrator and direct executors to stop and ask the user.
+- Small supporting edits outside owned files are allowed only when necessary to complete the task cleanly, reduce duplication, extract shared code, maintain coherent contracts, or preserve the project's existing architectural boundaries and separation of concerns without implementing future-task work.
+- Small structural edits that keep responsibilities in the right place are in scope even when they cross a file boundary: moving wiring out of domain code, splitting mixed-responsibility files, extracting small helpers, or relocating code into the layer or module where the project would normally expect it.
+- If a task needs broader scope than a small supporting or structural edit, the plan should either name that scope explicitly or instruct worker executors to stop and escalate to the orchestrator and direct executors to stop and ask the user.
 - Workers should return a short handoff summary with files changed, shared types or contracts added or modified, commands run, verification results, plan updates made, and commit SHA or blocker.
 - If delegated execution is intended but the user has not explicitly authorized worker mode in the current chat, the orchestrator must stop and ask the user for that authorization instead of executing locally.
 - Plans should include enough state and handoff structure that execution can pause cleanly and resume in a fresh session when context pressure gets too high.
@@ -99,6 +100,7 @@ Tasks are written top-down:
 2. **Simple first, then complex** — Bite-sized iterations. Add minimal behavior, verify, then extend.
 3. **Inner layers follow the interface** — Don't add files for inner layers before they're used by the public API. Internal structure follows established codebase patterns but is driven by the interface.
 4. **Test first (TDD)** — Each task definition starts with the test. Instruct the executing agent to write a failing test against the interface, then implement what's needed to make it pass. Keeps tests lean and focused on observable behavior.
+5. **Refactor after green when structure wants it** — Plans should preserve the project's current structure when one exists, and otherwise move the code toward clearer responsibilities and separation of concerns. Do not pre-plan speculative refactors, but do require a green-state review for emerging structural problems and allow the executor to address them inside task scope.
 
 ## Test Granularity
 
@@ -114,6 +116,7 @@ Each task follows this shape:
 1. **Add or extend a test** — Write failing assertion(s) against the public interface first. Instruct the executing agent to follow project-specific rules for writing tests.
 2. **Implement everything needed to pass** — Across as many files as required (middleware, use case, repository, client, wiring).
 3. **Complete when checks pass** — Run the project's `check` script (or equivalent) on touched modules.
+4**Review the green state for structure** — Once tests pass, review the touched code for responsibility leaks, mixed concerns, awkward file boundaries, or obvious opportunities to better match the project's existing structure. If the project lacks a clear structure, prefer changes that move it toward clearer responsibilities and easier maintenance. Apply only the structural refactors needed to keep the task's result coherent; avoid speculative redesign.
 
 **Group by behavior, not by file.** A task like "Add WorkOS provisioning to tenant creation" covers use case, repository, client, shared types, and wiring—driven by one set of test assertions. If complex, iterate: start with a simple test that needs little code, then extend it or add more tests in baby steps.
 
@@ -125,6 +128,16 @@ The last subtasks of every task MUST be:
 2. **Run checks** — Execute the `check` script on all touched modules (or run typechecks and tests **with minimal log output** for affected modules if no dedicated script exists).
 3. **Commit** — `git commit` if checks pass. Pre-generate the commit message into the task, following the commit message rules. (NO PREFIXES feat/fix/chore etc)
 
+## Final Whole-Change Review
+
+- For plans with multiple implementation tasks, shared contracts, or cross-module changes, add a final top-level review task after the behavior tasks are complete.
+- This is a review task, not a pre-planned refactoring task. Do not ask the planner to predict specific cleanup work that might be needed at the end unless that work is already a known requirement.
+- The purpose of the task is to inspect the completed change set in the context of the resulting codebase state and catch unforeseen issues that only become clear once the work is integrated.
+- The task should tell the executor to review the diff, the changed files in their full current form, and adjacent files or modules when needed to understand whether the resulting structure is coherent for this project.
+- The task should explicitly look for cross-task duplication, unclear ownership, mixed responsibilities, misplaced code, awkward file boundaries, naming drift, and missing extractions or seams that became apparent only after the implementation landed.
+- The task may apply small consolidating refactors that improve coherence and maintainability without adding behavior or starting a speculative redesign.
+- If no such issues are found, the task should record that conclusion and avoid churn.
+
 ## Planning Rules
 
 - Keep the plan top-down and interface-driven.
@@ -135,7 +148,10 @@ The last subtasks of every task MUST be:
 - In `Interactions`, state that workers read the full plan for background context but execute only their assigned task.
 - In `Interactions`, state that executors must read the coding-standards skill and all applicable `AGENTS.md` before acting and that the plan does not override it.
 - In `Interactions`, state that owned files define primary edit scope and that allowed shared files cover expected cross-task touch points.
+- In `Interactions`, state that executors should preserve the project's current structural conventions when they are clear and otherwise move the code toward clearer separation of concerns, while avoiding speculative architectural rewrites.
 - Encourage local engineering judgment within task scope: workers may choose better local naming, decomposition, abstractions, code-hygiene refactors, and small implementation improvements that serve the task's intent.
+- Require each task to include a green-state structural review step after behavior is passing and before final checks. That review should explicitly consider whether responsibilities are in the right place, whether wiring or configuration leaked into core logic, whether a touched file now has multiple reasons to change, and whether a small extraction, move, or file split would materially improve maintainability.
+- Require a final whole-change review task when the plan spans multiple implementation tasks, shared contracts, or cross-module changes. That task must review the resulting codebase context, not just the patch text, and must be framed around unforeseen issues discovered after the implementation work is integrated.
 - Require stop-and-escalate conditions for workers, and stop-and-ask conditions for direct execution, when an improvement would change user-visible behavior beyond the task's intent, invalidate task ordering, add broad architectural scope, or effectively implement future-task work.
 - Prefer integration tests; use unit tests only when they add clear value.
 - If the spec is silent on feature flags for a new feature, ask before planning.
@@ -151,11 +167,15 @@ Every top-level task should include, in a concise but explicit form:
 - the failing signal or first verification step
 - the implementation goal
 - any non-goals or boundaries needed to prevent scope drift
+- the structural expectations to preserve or move toward for the touched code
+- the green-state structural review step
 - the required verification commands
 - a diff review step
 - a plan-update step covering checkbox transitions
 - the exact commit message
 - expected worker handoff contents when worker mode is used
+
+For qualifying plans, add a final whole-change review task whose scope is to assess the integrated result in context and fix only unforeseen structural issues that are in scope. Do not turn that task into an open-ended cleanup bucket or ask it to execute speculative architecture work.
 
 The task text may tell the worker to read the full plan for sequencing and background context, but it must also state that doing so does not expand file ownership or authorize future-task implementation.
 The task text should leave room for better local implementation choices inside the task's scope while making clear when the worker must stop and escalate to the orchestrator before widening scope.

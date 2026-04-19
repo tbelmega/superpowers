@@ -7,7 +7,7 @@ description: Use when you have a written implementation plan to execute — defa
 
 ## Overview
 
-Load plan, review critically, execute all tasks, report when complete. **superpowers:writing-plans** instructs implementers to follow **this** skill; treat it as the canonical execution contract unless the human explicitly chooses an optional workflow (see [Optional: Task workers](#optional-task-workers-and-two-stage-review)).
+Load plan, review critically, execute all tasks, report when complete. **superpowers:writing-plans** instructs implementers to follow **this** skill; treat it as the canonical execution contract unless the human explicitly chooses an optional workflow.
 
 **Fidelity to the plan:** A task is **not** done when the code “looks right.” You must complete **everything** the plan assigns for that task **in order**: tests/TDD steps, implementation, **`AGENTS.md` review**, **running the checks** the plan names (scripts, typecheck, tests for touched modules), **`git commit`** when the plan says to, and any other listed subtasks. Non-code steps are **mandatory deliverables**, not optional follow-up. If the plan names a command, run it (or stop and ask if the environment truly cannot run it). Do not report a task complete while skipping its verification or commit steps.
 
@@ -109,8 +109,10 @@ Before editing code or running plan steps:
 - The plan may refine `AGENTS.md` within task scope but must not override it.
 - Reading the full plan does not expand edit scope or authorize future-task implementation.
 - Owned files define the primary edit scope. Allowed shared files cover expected cross-task touch points such as shared types, contracts, utilities, and configuration.
-- Small supporting edits outside owned files are allowed only when necessary for code hygiene or to complete the assigned task correctly, and they must be reported explicitly in the handoff.
-- Within the assigned task scope, workers should look for better local design choices, simpler decompositions, reusable abstractions, and code-hygiene improvements that improve the result without changing the task's intent.
+- Small supporting edits outside owned files are allowed only when necessary for code hygiene, to complete the assigned task correctly, or to preserve architectural boundaries and separation of concerns, and they must be reported explicitly in the handoff.
+- Within the assigned task scope, workers should look for better local design choices, simpler decompositions, reusable abstractions, structural cleanups, and code-hygiene improvements that improve the result without changing the task's intent.
+- Once the task is green, perform the plan's structural review before final checks. Preserve the project's existing structure when it is clear; if the project is still emergent, move the touched code toward clearer responsibilities, separation of concerns, and easier maintenance.
+- Use that green-state review to catch responsibility leaks such as wiring or configuration in core logic, transport concerns mixed into domain behavior, persistence details leaking into higher layers, mixed-responsibility files, or functions that now want extraction. Fix these when the change stays within task scope.
 - If broader scope expansion is needed and the plan does not already authorize it, stop and escalate to the orchestrator.
 - Stop and escalate to the orchestrator before changing user-visible behavior beyond the task's intent, invalidating task order, adding broad architectural scope, or effectively implementing future-task work.
 - Update the plan file as work progresses: when starting a top-level task, change its checkbox from `[ ]` to `[~]`; when completing it, change `[~]` to `[x]`. If the plan also mirrors tasks in YAML todos, keep their statuses in sync.
@@ -138,10 +140,11 @@ Before editing code or running plan steps:
 1. Read the plan and complete the preflight.
 2. Mark the current top-level task in progress.
 3. Execute every substep in order in the selected mode and capture verification evidence.
-4. If execution reveals a better structure, missing work, or a needed scope change beyond the task's allowed local judgment, have the orchestrator pause to amend the plan or ask the user before continuing.
-5. If context pressure becomes high, finish the current safe boundary if possible, update the plan, write a resumable handoff with current state and the next recommended prompt, and suggest continuing in a fresh session.
-6. Mark the task complete only after all required verification and commit steps finish.
-7. After all tasks, use `finishing-a-development-branch`.
+4. After the task reaches green, perform the plan's structural review and apply any in-scope refactor needed to keep responsibilities well placed and maintain the project's structural conventions.
+5. If execution reveals a better structure, missing work, or a needed scope change beyond the task's allowed local judgment, have the orchestrator pause to amend the plan or ask the user before continuing.
+6. If context pressure becomes high, finish the current safe boundary if possible, update the plan, write a resumable handoff with current state and the next recommended prompt, and suggest continuing in a fresh session.
+7. Mark the task complete only after all required verification and commit steps finish.
+8. After all tasks, use `finishing-a-development-branch`.
 
 
 ## Plan File Updates
@@ -154,6 +157,7 @@ Update the plan `.md` file as you go so the human has a persistent progress view
 ## Remember
 - Review plan critically first
 - Follow plan steps exactly — **whole task**, including checks and commits when the plan requires them
+- Treat the green-state refactor/structure review as mandatory when the plan includes it; do not stop at "tests pass" if the touched code still has obvious responsibility or boundary problems that are in scope to fix
 - Don't skip verifications or treat “implementation only” as done
 - Reference skills when plan says to
 - Stop when blocked, don't guess
