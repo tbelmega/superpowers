@@ -4,7 +4,7 @@ description: Use when starting any conversation to decide whether any local skil
 ---
 
 <SUBAGENT-STOP>
-If you were dispatched as a subagent for a specific task, skip this skill.
+If you were dispatched as a subagent for a specific task, skip this skill, but still read all applicable `AGENTS.md` before acting (at project root, and every nested AGENTS.md on the path of files you're touching).
 </SUBAGENT-STOP>
 
 # Using Superpowers
@@ -21,7 +21,7 @@ Use this skill first in a top-level session.
 
 ## Priority
 
-1. User instructions in `CLAUDE.md`, `GEMINI.md`, `AGENTS.md`, or the chat
+1. User instructions in `AGENTS.md` or the chat
 2. Applicable Superpowers skills
 3. Default system behavior
 

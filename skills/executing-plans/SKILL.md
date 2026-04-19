@@ -9,7 +9,7 @@ description: Use when you have a written implementation plan to execute — defa
 
 Load plan, review critically, execute all tasks, report when complete. **superpowers:writing-plans** instructs implementers to follow **this** skill; treat it as the canonical execution contract unless the human explicitly chooses an optional workflow (see [Optional: Task workers](#optional-task-workers-and-two-stage-review)).
 
-**Fidelity to the plan:** A task is **not** done when the code “looks right.” You must complete **everything** the plan assigns for that task **in order**: tests/TDD steps, implementation, **project rules review**, **running the checks** the plan names (scripts, typecheck, tests for touched modules), **`git commit`** when the plan says to, and any other listed subtasks. Non-code steps are **mandatory deliverables**, not optional follow-up. If the plan names a command, run it (or stop and ask if the environment truly cannot run it). Do not report a task complete while skipping its verification or commit steps.
+**Fidelity to the plan:** A task is **not** done when the code “looks right.” You must complete **everything** the plan assigns for that task **in order**: tests/TDD steps, implementation, **`AGENTS.md` review**, **running the checks** the plan names (scripts, typecheck, tests for touched modules), **`git commit`** when the plan says to, and any other listed subtasks. Non-code steps are **mandatory deliverables**, not optional follow-up. If the plan names a command, run it (or stop and ask if the environment truly cannot run it). Do not report a task complete while skipping its verification or commit steps.
 
 **Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
@@ -58,7 +58,7 @@ After all tasks complete and verified:
 
 - Review the plan before starting and raise critical gaps.
 - Follow every plan step in order.
-- A task is not done until its tests, implementation, rules review, checks, commit, and any other listed subtasks are finished.
+- A task is not done until its tests, implementation, `AGENTS.md` review, checks, commit, and any other listed subtasks are finished.
 - Keep plan checkboxes and YAML todos in sync when the plan uses both.
 - The markdown plan file is the human-facing source of truth for progress and recovery after interruptions.
 - Do not switch into a harness-native plan or spec mode while following this workflow unless the user explicitly asks to leave the repository workflow.
@@ -80,10 +80,12 @@ After all tasks complete and verified:
 Before editing code or running plan steps:
 
 1. Read the plan and review it critically.
-2. Read the plan's `Execution Mode` section.
-3. Determine whether the user explicitly requested worker mode, explicitly requested direct mode, or did not specify.
-4. Determine whether this harness supports worker orchestration.
-5. Choose a mode using the rules below.
+2. Read the coding-standards.md skill.
+3. Read the all applicable `AGENTS.md` files. (At the project root, plus nested AGENTS.md in the path of files you touch)
+4. Read the plan's `Execution Mode` section.
+5. Determine whether the user explicitly requested worker mode, explicitly requested direct mode, or did not specify.
+6. Determine whether this harness supports worker orchestration.
+7. Choose a mode using the rules below.
 
 ## Mode Selection
 
@@ -101,8 +103,10 @@ Before editing code or running plan steps:
 - The current agent is the orchestrator.
 - Keep orchestrator context small: do not retain full build, test, or typecheck logs beyond what is needed to update status, report blockers, or capture verification evidence.
 - Use one fresh worker per top-level task unless the plan explicitly breaks the task further.
+- Workers must read the coding-standards skill and all applicable `AGENTS.md` before implementation.
 - Workers should read the full plan for background context, sequencing, and shared constraints.
 - Pass the full top-level task text and any additional task-specific context the worker needs.
+- The plan may refine `AGENTS.md` within task scope but must not override it.
 - Reading the full plan does not expand edit scope or authorize future-task implementation.
 - Owned files define the primary edit scope. Allowed shared files cover expected cross-task touch points such as shared types, contracts, utilities, and configuration.
 - Small supporting edits outside owned files are allowed only when necessary for code hygiene or to complete the assigned task correctly, and they must be reported explicitly in the handoff.

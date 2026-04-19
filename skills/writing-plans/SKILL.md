@@ -7,6 +7,8 @@ description: Use when you have an approved spec or clear requirements for a mult
 
 Write an implementation plan that someone without codebase context can execute.
 
+Before planning, read the all applicable `AGENTS.md`. Plans must follow it and must not override it.
+
 ## Output
 
 - Save to `docs/plans/YYYY-MM-DD-<feature-name>.md`. User preferences override the default.
@@ -53,6 +55,7 @@ For Codex plans, make the worker prompt explicit:
 - Write plans so an orchestrator agent can execute them with a relatively clean context window.
 - Each top-level task should be executable by a fresh worker with minimal prior chat context.
 - Workers should read the full plan for background context, sequencing, and shared constraints, but must execute only their assigned top-level task.
+- Workers should read the coding-standards skill and all applicable `AGENTS.md` before implementation; the plan may refine it but must not override it.
 - Reading the full plan does not expand edit scope by itself.
 - Each task should specify owned files, allowed shared files, required verification commands, and an exact commit message.
 - The owned-files list defines the task's primary edit scope, not an absolute ban on necessary code-hygiene edits.
@@ -118,7 +121,7 @@ Each task follows this shape:
 
 The last subtasks of every task MUST be:
 
-1. **Check rules** — Review changes against project-specific rules (ADRs, Cursor rules, etc.). Output a summary of rules checked and any violations.
+1. **Check rules** — Review changes against project-specific rules in ADRs, Cursor rules, `AGENTS.md`. Output a summary of rules checked and any violations.
 2. **Run checks** — Execute the `check` script on all touched modules (or run typechecks and tests **with minimal log output** for affected modules if no dedicated script exists).
 3. **Commit** — `git commit` if checks pass. Pre-generate the commit message into the task, following the commit message rules. (NO PREFIXES feat/fix/chore etc)
 
@@ -130,6 +133,7 @@ The last subtasks of every task MUST be:
 - Harness-native planning features may be mentioned only as optional helpers or mirrors when they do not replace the markdown plan or hide required state from the user.
 - In `Interactions`, state whether tasks must run strictly in order or identify the tasks that are parallel-safe.
 - In `Interactions`, state that workers read the full plan for background context but execute only their assigned task.
+- In `Interactions`, state that executors must read the coding-standards skill and all applicable `AGENTS.md` before acting and that the plan does not override it.
 - In `Interactions`, state that owned files define primary edit scope and that allowed shared files cover expected cross-task touch points.
 - Encourage local engineering judgment within task scope: workers may choose better local naming, decomposition, abstractions, code-hygiene refactors, and small implementation improvements that serve the task's intent.
 - Require stop-and-escalate conditions for workers, and stop-and-ask conditions for direct execution, when an improvement would change user-visible behavior beyond the task's intent, invalidate task ordering, add broad architectural scope, or effectively implement future-task work.
