@@ -11,6 +11,13 @@ Guide completion of development work by presenting clear options and handling ch
 
 **Core principle:** Verify tests → Present options → Execute choice → Clean up.
 
+**Linear history (default):** Do **not** create merge commits without **explicit
+user permission**. Prefer **rebase** onto the base branch and then **fast-forward**
+the base branch (`git merge --ff-only`), or fast-forward when already possible.
+Only in **rare** cases is a merge commit the lesser evil (e.g. rebasing would be
+unreasonably tedious); if you suspect that, **ask** whether a merge commit is
+allowed for **that** integration before using `git merge` without `--ff-only`.
+
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
 ## The Process
@@ -67,21 +74,37 @@ Which option?
 
 #### Option 1: Merge Locally
 
-```bash
-# Switch to base branch
-git checkout <base-branch>
+Integrate **without a merge commit** unless the user already approved one for
+this step.
 
-# Pull latest
+```bash
+# Switch to base branch and update it
+git checkout <base-branch>
 git pull
 
-# Merge feature branch
-git merge <feature-branch>
+# Default: rebase feature onto base, then fast-forward base (linear history)
+git checkout <feature-branch>
+git rebase <base-branch>   # resolve conflicts if prompted; run tests if needed
+git checkout <base-branch>
+git merge --ff-only <feature-branch>
 
-# Verify tests on merged result
+# If rebase is infeasible and a merge commit might be justified: stop and ask
+# the user for permission before: git merge <feature-branch>   # merge commit
+
+# Verify tests on the integrated result
 <test command>
 
 # If tests pass
 git branch -d <feature-branch>
+```
+
+If `<feature-branch>` is **already** a strict fast-forward from `<base-branch>`
+(no divergent commits on base), you can instead:
+
+```bash
+git checkout <base-branch>
+git pull
+git merge --ff-only <feature-branch>
 ```
 
 Then: Cleanup worktree (Step 5)
@@ -180,11 +203,13 @@ git worktree remove <worktree-path>
 
 **Never:**
 - Proceed with failing tests
-- Merge without verifying tests on result
+- Integrate without verifying tests on result
+- Create **merge commits** without user permission (see **Linear history** above)
 - Delete work without confirmation
 - Force-push without explicit request
 
 **Always:**
+- Prefer **rebase + fast-forward** (or **fast-forward only**) when integrating into the base branch unless the user approved a merge commit for this integration
 - Verify tests before offering options
 - Present exactly 4 options
 - Get typed confirmation for Option 4
