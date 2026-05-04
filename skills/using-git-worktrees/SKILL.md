@@ -20,7 +20,8 @@ If no existing directory or repo instruction chooses the location, ask:
 
 - For project-local worktrees, verify the directory is ignored with `git check-ignore`.
 - If it is not ignored, add the ignore rule and commit that before creating the worktree.
-- Create the worktree on a new branch and switch into it.
+- If the project uses worktrees-per-feature or does not use worktrees yet, create the worktree on a new branch and switch into it.
+- If the project uses multiple permanent generic worktrees, ask the user which worktree to use and create a new feature branch from the master branch in that worktree.
 
 ## Baseline
 
