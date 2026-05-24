@@ -79,13 +79,20 @@ For Codex plans, make the worker prompt explicit:
 - Add dependency installation first when new packages are needed.
 - Add early shared-contract work when later tasks depend on it.
 
-## Feature Flags
+## Feature Gating
 
-For new features, the spec may require a feature flag (invisible by default, enable in select envs for testing). For multi-tenant SaaS, feature config may also be needed (enable/disable per tenant based on contract). **If the spec doesn't mention it, seek clarification before planning**—did the human not think of it, or do they not want it?
+For new features, the spec may require feature gating. Feature gating has two distinct subtypes:
 
-If a feature flag (or per-tenant feature config) is wanted:
-- **First task after dependencies** — Add the feature flag infrastructure and wiring.
-- **Other tasks** — Implement behavior conditional on the flag (and per-tenant config if applicable). New code is gated; existing behavior unchanged when flag/config is off.
+- **Feature flag** — A deployment or rollout switch, usually stage-scoped and controlled by environment variable or similar operational config. It answers: "Is this code path enabled in this deployment?"
+- **Feature entitlement** — A tenant/user-scoped access decision, usually based on contract, subscription plan, role, allowlist, or admin config. It answers: "Is this tenant or user allowed to use this capability?"
+
+For every new feature, if the spec does not state whether gating is wanted, ask precisely:
+
+`Should this feature have gating? Choose one: no gating; yes, a feature flag that turns it on/off system-wide per stage; yes, a feature entitlement that is silent for most tenants/users and can be activated per tenant/user.`
+
+If gating is wanted:
+- **First task after dependencies** — Add the feature flag or feature entitlement infrastructure and wiring.
+- **Other tasks** — Implement behavior conditional on the selected gating subtype. New code is gated; existing behavior stays unchanged when the flag or entitlement is off.
 
 ## Cross-cutting Concerns (API Features)
 
@@ -154,7 +161,7 @@ The last subtasks of every task MUST be:
 - Require a final whole-change review task when the plan spans multiple implementation tasks, shared contracts, or cross-module changes. That task must review the resulting codebase context, not just the patch text, and must be framed around unforeseen issues discovered after the implementation work is integrated.
 - Require stop-and-escalate conditions for workers, and stop-and-ask conditions for direct execution, when an improvement would change user-visible behavior beyond the task's intent, invalidate task ordering, add broad architectural scope, or effectively implement future-task work.
 - Prefer integration tests; use unit tests only when they add clear value.
-- If the spec is silent on feature flags for a new feature, ask before planning.
+- If the spec is silent on feature gating for a new feature, ask the precise gating question before planning.
 - For API changes, ask about validation, authentication, and troubleshooting logs if the spec does not cover them.
 - Append a flat `Tickets` section after the tasks. These tickets summarize and break down only the work already covered by the plan so it can be represented and tracked on a Kanban board or similar system; they are not follow-up tasks or post-plan backlog items.
 
