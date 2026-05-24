@@ -17,6 +17,25 @@ Before planning, read the all applicable `AGENTS.md`. Plans must follow it and m
 - Include a file map before the task list.
 - Add an `Execution Mode` section before the task list.
 
+## Plan Scope
+
+Do not assume one approved spec always becomes one implementation plan. Before planning, determine whether the request is for the whole spec or a staged slice of it.
+
+Use one plan when the scope is coherent, can be implemented and reviewed as one change set, and does not depend on unresolved design or product decisions.
+
+Recommend staged plans when the spec is large, spans multiple product surfaces or systems, contains independently shippable milestones, includes design-dependent and design-independent work, or would create a plan too large for a fresh worker to execute safely.
+
+For a staged plan:
+
+- Name the plan slice explicitly in the title and `Capabilities`.
+- State which parts of the spec are included.
+- State which parts of the spec are intentionally deferred to later plans.
+- Preserve contracts and foundations that later stages need, but do not implement deferred behavior.
+- In `Interactions`, explain how this plan relates to expected follow-up plans.
+- In `Tickets`, summarize only the work covered by this plan, not the deferred remainder of the spec.
+
+If the spec has unresolved Claude Design mockups or visual decisions, ask whether to pause planning until mockups are available or write a first plan for design-independent work that can proceed in parallel. When planning design-independent work, keep UI implementation out unless the spec already contains enough non-visual structure to implement safely.
+
 ## Execution Mode
 
 Every plan must declare one of these policies:
@@ -148,6 +167,7 @@ The last subtasks of every task MUST be:
 ## Planning Rules
 
 - Keep the plan top-down and interface-driven.
+- Scope the plan intentionally. If planning only a slice of a larger spec, make the included and deferred scope explicit.
 - Plan the invariants, interfaces, ordering constraints, and verification expectations; do not try to precompute every good implementation decision up front.
 - Do not use a harness-native plan or spec mode as the authoritative workflow for this repository. The saved markdown plan under `docs/plans/` is canonical.
 - Harness-native planning features may be mentioned only as optional helpers or mirrors when they do not replace the markdown plan or hide required state from the user.

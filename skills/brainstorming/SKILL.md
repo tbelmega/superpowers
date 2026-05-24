@@ -16,21 +16,35 @@ Do not implement before presenting a design and getting user approval.
 ## Workflow
 
 1. Explore project context.
-2. If upcoming questions are visual, offer the visual companion in its own message and wait. If accepted, read `skills/brainstorming/visual-companion.md`.
+2. If upcoming questions are visual, offer visual handling options in its own message and wait: use the visual companion here, or leave visual decisions and visual brainstorming to Claude Design, or none. If the user chooses the visual companion, read `skills/brainstorming/visual-companion.md`.
 3. Create `docs/specs/YYYY-MM-DD-<topic>-design.md` with `Status: Draft / not for implementation`.
 4. Ask one question at a time.
 5. Propose 2-3 approaches with trade-offs and a recommendation.
 6. Present the design in sections and get approval as you go.
-7. Finalize the spec, remove contradictions, update status, and commit.
-8. Run the spec review loop with `spec-document-reviewer-prompt.md` until approved or blocked after 3 rounds.
-9. Ask the user to review the written spec.
-10. After approval, invoke `writing-plans` and no other implementation skill.
+7. If the user chose Claude Design for visual work, create a UX Brief handoff from `skills/brainstorming/ux-brief.md`.
+8. Finalize the spec, and the UX Brief if one was created, remove contradictions, update status, and commit.
+9. Run the spec review loop with `spec-document-reviewer-prompt.md` until approved or blocked after 3 rounds.
+10. Ask the user to review the written spec and choose the planning transition.
+11. After approval and a planning-transition choice, invoke `writing-plans` and no other implementation skill.
 
 **Documentation:**
 
 - The spec file should already exist and be mostly complete from incremental updates; **finalize** it (coherence, draft status, contradictions) then commit to `docs/specs/YYYY-MM-DD-<topic>-design.md` (or user-preferred path)
+- If the user chose Claude Design, finalize the UX Brief handoff too and include it in the same commit unless there is a clear reason to commit separately.
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit after finalize and after any later edits from spec review or user review
+
+**Spec Diagrams:**
+When a spec becomes complex enough that a human reviewer would struggle to understand it from prose alone, add Mermaid diagrams directly in the markdown spec file. Choose diagrams that clarify the shape of the system; do not add diagrams for simple, obvious flows or well-established patterns.
+
+Useful triggers:
+
+- If the spec introduces two or more meaningful data entities, add a Mermaid entity-relationship diagram.
+- If the spec describes complex communication between modules, services, users, or third-party APIs, add a Mermaid sequence diagram.
+- If the spec includes meaningful state transitions or lifecycle rules, add a Mermaid state diagram.
+- If the spec describes a branching workflow, approval flow, or multi-step operational process, add a Mermaid flowchart.
+
+Use informed judgment. A diagram should reduce review effort, expose ambiguity, or make relationships easier to challenge. If it would only restate obvious prose, skip it. If unsure whether a diagram would help, ask the user before adding it.
 
 **Spec Review Loop:**
 After the finalized spec is committed:
@@ -42,23 +56,43 @@ After the finalized spec is committed:
 **User Review Gate:**
 After the spec review loop passes, ask the user to review the written spec before proceeding:
 
-> "Spec finalized and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
+> "Spec finalized and committed to `<path>`. Please review it and let me know if you want changes. After that, we should decide whether to write one implementation plan for the whole spec or split planning into staged plans."
 
 Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
 
+**Planning Transition Gate:**
+Before invoking `writing-plans`, assess whether one implementation plan is appropriate or whether the spec should be split into staged plans. Consider splitting when the spec is large, crosses multiple product surfaces or systems, contains work that can ship independently, includes design-dependent and design-independent parts, or would produce an implementation plan too large for a fresh worker to execute safely.
+
+Present a recommendation and ask the user to choose:
+
+- One plan for the whole approved spec.
+- A first plan for a named slice of the spec, with later planning sessions for the remaining slices.
+- If Claude Design was chosen: pause until Claude Design mockups are available, then iterate the spec and plan with the mockups.
+- If Claude Design was chosen: write a first plan for design-independent work that can proceed while Claude Design works, then create follow-up plans after mockups are available.
+
+When recommending a first slice, name what is included, what is deferred, and why the split preserves coherence.
+
 **Implementation:**
 
-- Invoke the writing-plans skill to create a detailed implementation plan
+- Invoke the writing-plans skill to create the selected implementation plan or first staged plan.
 - Do NOT invoke any other skill. writing-plans is the next step.
+
+## Visual Questions
+
+Visual questions can be handled by the browser-based visual companion or left to Claude Design.
+
+**Offering visual handling:** When you anticipate that upcoming questions will involve visual content (mockups, layouts, diagrams), offer visual handling once for consent and tool preference:
+> "Some of what we're working on may involve visual decisions. I can handle those here with the visual companion, showing mockups, diagrams, comparisons, and other visuals in a local browser; or we can leave visual decisions and visual brainstorming to Claude Design and keep this session focused on product behavior, structure, and written spec decisions. Which do you prefer?"
+
+**This offer MUST be its own message.** Do not combine it with clarifying questions, context summaries, or any other content. The message should contain ONLY the offer above and nothing else. Wait for the user's response before continuing.
+
+If the user chooses Claude Design, continue text-first brainstorming in this session. Do not make visual design decisions here unless the user later brings them back into this session. Capture visual open questions in the spec as items for Claude Design or as unresolved visual decisions. Toward the end of brainstorming, before finalizing the spec, read `skills/brainstorming/ux-brief.md` and create a UX Brief handoff document for the user to provide to Claude Design.
+
+After the UX Brief is finalized, ask the user to send it to Claude Design. At the planning transition, do not assume implementation planning should proceed immediately. Ask whether to pause the Superpowers workflow until Claude Design mockups are available, or to create a first implementation plan for design-independent work that can proceed in parallel while design work continues.
 
 ## Visual Companion
 
 A browser-based companion for showing mockups, diagrams, and visual options during brainstorming. Available as a tool — not a mode. Accepting the companion means it's available for questions that benefit from visual treatment; it does NOT mean every question goes through the browser.
-
-**Offering the companion:** When you anticipate that upcoming questions will involve visual content (mockups, layouts, diagrams), offer it once for consent:
-> "Some of what we're working on might be easier to explain if I can show it to you in a web browser. I can put together mockups, diagrams, comparisons, and other visuals as we go. This feature is still new and can be token-intensive. Want to try it? (Requires opening a local URL)"
-
-**This offer MUST be its own message.** Do not combine it with clarifying questions, context summaries, or any other content. The message should contain ONLY the offer above and nothing else. Wait for the user's response before continuing. If they decline, proceed with text-only brainstorming.
 
 **Per-question decision:** Even after the user accepts, decide FOR EACH QUESTION whether to use the browser or the terminal. The test: **would the user understand this better by seeing it than reading it?**
 
