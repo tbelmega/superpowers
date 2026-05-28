@@ -3,6 +3,10 @@ name: test-driven-development
 description: Use when implementing any feature or bugfix, before writing implementation code
 ---
 
+**Refactoring:** When you refactor code that is already tested, e.g. extracting a method from a service that's covered my integration tests, 
+do **not** write new tests against the refactored code. 
+Run the existing tests before and after the code change to confirm the refactoring didn't change system behavior.
+
 # Test-Driven Development (TDD)
 
 ## Overview
