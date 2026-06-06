@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: Use before any creative work or behavior change to design the work, persist a spec, and get approval before implementation
+description: Use before creative work, new features, components, functionality, or behavior changes
 ---
 
 # Brainstorming Ideas Into Designs
@@ -11,21 +11,78 @@ Start by understanding the current project context, then ask questions one at a 
 
 <HARD-GATE>
 Do not implement before presenting a design and getting user approval.
+Do NOT invoke an implementation skill, write code, scaffold a project, or take
+any other implementation action before approval. This applies regardless of perceived simplicity.
 </HARD-GATE>
+
+## No "Too Simple" Exception
+
+Small changes still contain assumptions. The design may be only a few sentences,
+but you must present it and get approval before implementation.
 
 ## Workflow
 
 1. Explore project context.
 2. If upcoming questions are visual, offer visual handling options in its own message and wait: use the visual companion here, or leave visual decisions and visual brainstorming to Claude Design, or none. If the user chooses the visual companion, read `skills/brainstorming/visual-companion.md`.
 3. Create `docs/specs/YYYY-MM-DD-<topic>-design.md` with `Status: Draft / not for implementation`.
-4. Ask one question at a time.
-5. Propose 2-3 approaches with trade-offs and a recommendation.
-6. Present the design in sections and get approval as you go.
-7. If the user chose Claude Design for visual work, create a UX Brief handoff from `skills/brainstorming/ux-brief.md`.
-8. Finalize the spec, and the UX Brief if one was created, remove contradictions, update status, and commit.
-9. Run the spec review loop with `spec-document-reviewer-prompt.md` until approved or blocked after 3 rounds.
-10. Ask the user to review the written spec and choose the planning transition.
-11. After approval and a planning-transition choice, invoke `writing-plans` and no other implementation skill.
+4. Assess whether the request fits one coherent spec. If it contains multiple independent subsystems, decompose it before detailed questioning and brainstorm the first coherent slice.
+5. Ask one question at a time.
+6. Propose 2-3 approaches with trade-offs and a recommendation.
+7. Present the design in sections and get approval as you go.
+8. If the user chose Claude Design for visual work, create a UX Brief handoff from `skills/brainstorming/ux-brief.md`.
+9. Finalize the spec, and the UX Brief if one was created, remove contradictions, update status, and commit.
+10. Run the spec review loop with `spec-document-reviewer-prompt.md` until approved or blocked after 3 rounds.
+11. Ask the user to review the written spec and choose the planning transition.
+12. After approval and a planning-transition choice, invoke `writing-plans` and no other implementation skill.
+
+## Understanding The Idea
+
+- Check relevant files, documentation, and recent commits before proposing changes.
+- Determine the purpose, constraints, success criteria, and explicit non-goals.
+- If the request contains multiple independent subsystems, identify their
+  boundaries, relationships, and build order. Each independently shippable
+  sub-project gets its own spec, plan, and implementation cycle.
+- Ask one question per message. Prefer multiple choice when the options are
+  known; use open-ended questions when discovery is still needed.
+- Keep the draft spec current as decisions are made. Do not let draft wording
+  turn assumptions into requirements.
+
+## Exploring Approaches
+
+- Propose 2-3 genuinely different approaches.
+- Lead with your recommended approach and explain why it best fits the stated
+  constraints.
+- Make trade-offs concrete: complexity, coupling, migration cost, operational
+  risk, user impact, and reversibility where relevant.
+- Apply YAGNI. Remove features and abstractions that do not serve an approved
+  requirement.
+
+## Presenting The Design
+
+- Scale each section to its complexity: brief for straightforward decisions,
+  more detailed where trade-offs or failure modes are subtle.
+- Cover the relevant architecture, components, data flow, error handling, and
+  testing strategy.
+- Validate sections incrementally and revise when the user identifies a wrong
+  assumption.
+
+### Design For Isolation And Clarity
+
+- Give each unit one clear purpose and expose well-defined interfaces.
+- For each unit, make clear what it does, how callers use it, and what it
+  depends on.
+- Prefer boundaries that let consumers understand behavior without reading
+  internals and let implementations change without breaking consumers.
+- Keep units independently testable. Treat files that accumulate unrelated
+  responsibilities as a design warning.
+
+### Work With The Existing Codebase
+
+- Follow established project patterns unless they conflict with the approved
+  requirements.
+- Include targeted improvements when existing boundaries directly obstruct the
+  design.
+- Do not propose unrelated refactoring.
 
 **Documentation:**
 
