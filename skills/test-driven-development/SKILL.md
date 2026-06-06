@@ -92,7 +92,16 @@ Confirm: test passes, other tests pass, output pristine. Test fails? Fix code, n
 
 ### REFACTOR — After Green Only
 
-Remove duplication, improve names, extract helpers. Keep tests green. Don't add behavior.
+Improve names and structure while keeping tests green. Don't add behavior.
+
+Apply AHA (Avoid Hasty Abstractions) and the Rule of Three:
+
+- One or two occurrences: prefer clear concrete code while the shared shape is uncertain.
+- Third occurrence: evaluate whether the pattern and ownership are genuinely shared; abstract when that evidence is present.
+- Abstract earlier only when an existing domain contract, architectural boundary, or correctness invariant already requires one shared implementation. Do not abstract for predicted reuse.
+- Similar-looking code may remain separate when the cases change independently.
+
+The third occurrence triggers judgment, not automatic extraction. It is often useful to write the third concrete case first, then refactor with all three examples visible.
 
 ## Good Tests
 

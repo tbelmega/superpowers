@@ -10,13 +10,13 @@ It starts from the moment you fire up your coding agent. As soon as it sees that
 
 Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest. 
 
-After you've signed off on the design, your agent puts together an implementation plan that's clear enough for an enthusiastic junior engineer with poor taste, no judgement, no project context, and an aversion to testing to follow. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and DRY. 
+After you've signed off on the design, your agent puts together an implementation plan that's clear enough for an enthusiastic junior engineer with poor taste, no judgement, no project context, and an aversion to testing to follow. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and AHA (Avoid Hasty Abstractions), using the Rule of Three as the normal threshold for extracting shared code.
 
 That plan lives in `docs/plans/` as a human-auditable markdown file with explicit checkbox state, so progress stays visible and recoverable even if the agent crashes or the session gets interrupted. Harness-native plan/spec modes are optional helpers at most, not the source of truth.
 
 Next up, once you say "go", `executing-plans` runs the plan. Worker mode is preferred because it keeps the orchestrator context small and lets each fresh worker focus on one task, but some harnesses require the user to explicitly authorize worker delegation in chat before the agent can use it. When worker mode is unavailable or not authorized, the workflow stops and asks whether to rerun in worker mode or execute directly.
 
-The plan constrains goals, boundaries, ordering, and verification, but it does not try to precompute every implementation detail. Within a task's scope, the executing agent is expected to use local engineering judgment: simplify design, reduce duplication, extract shared code, and improve code hygiene without silently expanding into future-task work.
+The plan constrains goals, boundaries, ordering, and verification, but it does not try to precompute every implementation detail. Within a task's scope, the executing agent is expected to use local engineering judgment: simplify design, tolerate limited duplication while the shared shape is uncertain, extract shared code when evidence supports it, and improve code hygiene without silently expanding into future-task work.
 
 There's a bunch more to it, but that's the core of the system. And because the skills trigger automatically, you don't need to do anything special. Your coding agent just has Superpowers.
 

@@ -33,7 +33,9 @@ git diff {BASE_SHA}..{HEAD_SHA}
 - Clean separation of concerns?
 - Proper error handling?
 - Type safety (if applicable)?
-- DRY principle followed?
+- AHA / Rule of Three followed? Prefer two clear concrete implementations over a speculative abstraction; at the third occurrence, evaluate whether the pattern and ownership are genuinely shared.
+- Any earlier abstraction justified by an existing domain contract, architectural boundary, or correctness invariant rather than predicted reuse?
+- Any repeated code that should remain separate because the cases change independently?
 - Edge cases handled?
 
 **Architecture:**
