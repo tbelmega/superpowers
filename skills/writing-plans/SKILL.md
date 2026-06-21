@@ -135,6 +135,22 @@ Tasks are written top-down:
 - **Coverage** — The type system plus integration tests provide sufficient coverage for internal wiring.
 - **Property-based tests (fast-check)** — After building a task with regular TDD, consider adding property-based tests if the code is suited: pure functions, invariants (e.g. round-trip serialization, algebraic laws), or transformations with many equivalence classes. Especially valuable when input combinations are numerous and unit tests may miss edge cases.
 
+## End-to-End Test Strategy
+
+When the project has end-to-end tests, inspect its existing E2E tests, test documentation, configuration, and conventions before finalizing the plan.
+
+For every changed user-visible flow, decide whether:
+
+- an existing E2E test, fixture, or test-data setup must change to reflect the intended behavior;
+- a new E2E test is justified; or
+- lower-level tests provide sufficient coverage and no E2E change is needed.
+
+Follow the project's established E2E policy and patterns. Do not add E2E tests merely because a feature is new, and do not duplicate behavior already covered adequately by unit or integration tests.
+
+When project evidence gives high confidence that E2E coverage should be added or changed, include that work in the relevant behavior task. If the evidence is ambiguous, ask the user before finalizing the plan.
+
+Record the E2E decision and rationale in the plan, including the command for running E2E tests locally when one exists. Require the full locally runnable E2E suite once after all implementation tasks are integrated; do not require every task to run the full suite unless the project explicitly requires it.
+
 ## Task Structure
 
 Each task follows this shape:

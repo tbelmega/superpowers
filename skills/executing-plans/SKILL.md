@@ -31,7 +31,20 @@ For each task:
 3. Run verifications as specified; capture enough in your notes that a reviewer could see checks ran and passed
 4. Mark as completed; update plan file: task `[x]` **only after** all of the above for that task are done
 
-### Step 3: Complete Development
+### Step 3: Run End-to-End Regression Tests
+
+If the project has E2E tests that can be run locally, run the full E2E suite after all implementation and whole-change review tasks are integrated.
+
+For each failure, first rule out unrelated pre-existing failures, environment problems, and test flakiness. Then classify failures caused by this change as one of:
+
+1. **Regression** — the implementation broke behavior that should still work. Fix the production code.
+2. **Intentional behavior change** — the existing E2E expectation, fixture, or test data no longer matches the approved behavior. Update the test artifacts.
+
+Do not change an E2E test merely to make the suite pass. If it is unclear whether a failure exposes a regression or an intentionally changed expectation, stop and ask the user before changing the test, fixture, or test data.
+
+Record the command, result, and classification of any failures as verification evidence.
+
+### Step 4: Complete Development
 
 After all tasks complete and verified:
 - Announce: "I'm using the finishing-a-development-branch skill to complete this work."
