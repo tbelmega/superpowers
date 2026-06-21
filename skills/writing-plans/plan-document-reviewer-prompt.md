@@ -6,6 +6,8 @@ Use after the full plan is written.
 Task tool (general-purpose):
   description: "Review plan document"
   prompt: |
+    If the parent run has an assigned worktree, review exclusively in: [absolute assigned worktree]. Before reading project files, verify `pwd` and `git rev-parse --show-toplevel` match it. Report `WRONG_WORKTREE` without acting on mismatch. Do not inspect or manipulate another checkout.
+
     Review this implementation plan.
 
     Plan: [PLAN_FILE_PATH]

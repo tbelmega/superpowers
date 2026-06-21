@@ -8,6 +8,14 @@ Use this template when dispatching a spec compliance reviewer subagent.
 Task tool (general-purpose):
   description: "Review spec compliance for Task N"
   prompt: |
+    ## Assigned Worktree — Mandatory
+
+    Review exclusively in: [absolute assigned worktree]
+
+    Before reading project files or running commands, change to that directory and verify both `pwd` and `git rev-parse --show-toplevel` resolve to the exact assigned path. If either check fails, stop and report `WRONG_WORKTREE`.
+
+    Do not inspect project state in, modify, copy from, copy to, clean, or otherwise manipulate any other checkout or worktree.
+
     You are reviewing whether an implementation matches its specification.
 
     ## What Was Requested
@@ -62,4 +70,5 @@ Task tool (general-purpose):
     Report:
     - ✅ Spec compliant (if everything matches after code inspection)
     - ❌ Issues found: [list specifically what's missing or extra, with file:line references]
+    - `WRONG_WORKTREE` if worktree verification failed before review
 ```

@@ -6,6 +6,14 @@ Use this template when dispatching an implementer subagent.
 Task tool (general-purpose):
   description: "Implement Task N: [task name]"
   prompt: |
+    ## Assigned Worktree — Mandatory
+
+    Work exclusively in: [absolute assigned worktree]
+
+    Before reading project files or running task commands, change to that directory and verify both `pwd` and `git rev-parse --show-toplevel` resolve to the exact assigned path. If either check fails, make no changes and report `WRONG_WORKTREE`.
+
+    Do not run project commands against, read task or recovery state from, modify, copy from, copy to, clean, reset, stash, commit in, or otherwise manipulate any other checkout or worktree. Do not use another checkout's changes as a source, even if work was accidentally performed there.
+
     You are implementing Task N: [task name]
 
     ## Task Description
@@ -38,8 +46,6 @@ Task tool (general-purpose):
     5. **Commit** when the task says to, after checks pass
     6. Self-review (see below)
     7. Report back with evidence (e.g. commands run, outcomes, commit hash if you committed)
-
-    Work from: [directory]
 
     **While you work:** If you encounter something unexpected or unclear, **ask questions**.
     It's always OK to pause and clarify. Don't guess or make assumptions.
@@ -103,7 +109,8 @@ Task tool (general-purpose):
     ## Report Format
 
     When done, report:
-    - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
+    - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT | WRONG_WORKTREE
+    - Verified Git top-level path
     - What you implemented (or what you attempted, if blocked)
     - What you tested and test results
     - Files changed
@@ -112,5 +119,6 @@ Task tool (general-purpose):
 
     Use DONE_WITH_CONCERNS if you completed the work but have doubts about correctness.
     Use BLOCKED if you cannot complete the task. Use NEEDS_CONTEXT if you need
-    information that wasn't provided. Never silently produce work you're unsure about.
+    information that wasn't provided. Use WRONG_WORKTREE without making changes if
+    the assigned worktree verification fails. Never silently produce work you're unsure about.
 ```

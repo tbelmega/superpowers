@@ -82,6 +82,8 @@ For Codex plans, make the worker prompt explicit:
 - Small structural edits that keep responsibilities in the right place are in scope even when they cross a file boundary: moving wiring out of domain code, splitting mixed-responsibility files, extracting small helpers, or relocating code into the layer or module where the project would normally expect it.
 - If a task needs broader scope than a small supporting or structural edit, the plan should either name that scope explicitly or instruct worker executors to stop and escalate to the orchestrator and direct executors to stop and ask the user.
 - Workers should return a short handoff summary with files changed, shared types or contracts added or modified, commands run, verification results, plan updates made, and commit SHA or blocker.
+- When execution is assigned to a worktree, the orchestrator must inject its canonical absolute path into every worker and reviewer prompt. Workers verify that Git top-level before acting and remain confined to it.
+- A worker that uses another checkout is stopped and replaced with a fresh worker that retries in the assigned worktree. The orchestrator must not inspect, copy, patch, cherry-pick, recreate, or clean up the invalid work.
 - If delegated execution is intended but the user has not explicitly authorized worker mode in the current chat, the orchestrator must stop and ask the user for that authorization instead of executing locally.
 - Plans should include enough state and handoff structure that execution can pause cleanly and resume in a fresh session when context pressure gets too high.
 

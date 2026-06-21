@@ -33,12 +33,15 @@ HEAD_SHA=$(git rev-parse HEAD)
 
 Use Task tool with superpowers:code-reviewer type, fill template at `code-reviewer.md`
 
+When the current run has an assigned worktree, pass its canonical absolute path. The reviewer must verify and remain confined to it. A review from another checkout is invalid; stop that reviewer and dispatch a fresh one in the assigned worktree. Do not inspect, copy, salvage, or clean work in the other checkout.
+
 **Placeholders:**
 - `{WHAT_WAS_IMPLEMENTED}` - What you just built
 - `{PLAN_OR_REQUIREMENTS}` - What it should do
 - `{BASE_SHA}` - Starting commit
 - `{HEAD_SHA}` - Ending commit
 - `{DESCRIPTION}` - Brief summary
+- `{ASSIGNED_WORKTREE}` - Canonical absolute worktree path
 
 **3. Act on feedback:**
 - Fix Critical issues immediately

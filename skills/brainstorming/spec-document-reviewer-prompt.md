@@ -9,6 +9,8 @@ for implementation planning.
 Task tool (general-purpose):
   description: "Review spec document"
   prompt: |
+    If the parent run has an assigned worktree, review exclusively in: [absolute assigned worktree]. Before reading project files, verify `pwd` and `git rev-parse --show-toplevel` match it. Report `WRONG_WORKTREE` without acting on mismatch. Do not inspect or manipulate another checkout.
+
     Review this spec for planning readiness.
 
     Spec: [SPEC_FILE_PATH]

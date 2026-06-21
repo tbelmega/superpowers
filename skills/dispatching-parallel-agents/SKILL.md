@@ -61,7 +61,12 @@ Each agent gets:
 - **Specific scope:** One test file or subsystem
 - **Clear goal:** Make these tests pass
 - **Constraints:** Don't change other code
+- **Assigned worktree:** Canonical absolute path and mandatory verification before acting
 - **Expected output:** Summary of what you found and fixed
+
+When the parent is assigned a worktree, every agent prompt must begin with that exact path and require `pwd` plus `git rev-parse --show-toplevel` verification. Agents are confined to it and must report `WRONG_WORKTREE` without acting on mismatch. They must never inspect another checkout for task or recovery state, manipulate it, or copy changes between worktrees.
+
+Do not run concurrent writers in the same worktree. Give independent write tasks distinct assigned worktrees or run them sequentially. If an agent uses the wrong checkout, stop it and retry with a fresh agent in the intended worktree; never salvage or clean up the invalid attempt.
 
 ### 3. Dispatch in Parallel
 
@@ -90,6 +95,9 @@ Good agent prompts are:
 
 ```markdown
 Fix the 3 failing tests in src/agents/agent-tool-abort.test.ts:
+
+Assigned worktree: /absolute/path/to/worktree
+Verify `pwd` and `git rev-parse --show-toplevel` match before acting. Work only there; report `WRONG_WORKTREE` on mismatch.
 
 1. "should abort tool with partial output capture" - expects 'interrupted at' in message
 2. "should handle mixed completed and aborted tools" - fast tool aborted instead of completed

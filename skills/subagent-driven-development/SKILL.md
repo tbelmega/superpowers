@@ -19,9 +19,12 @@ description: Optional compatibility reference for worker-orchestrated plan execu
 - Use one fresh worker per top-level task unless the plan explicitly requires a different split.
 - Workers should read the full plan for background context, sequencing, and shared constraints.
 - Pass the full top-level task text and any additional task-specific context the worker needs.
+- Start every worker and reviewer prompt with the canonical absolute assigned worktree. Require the worker to verify `pwd` and `git rev-parse --show-toplevel` match it before reading project files or running task commands.
+- Confine all worker activity to the assigned worktree. Workers must not target, inspect for task or recovery state, modify, copy from, copy to, clean, reset, stash, or otherwise manipulate another checkout.
 - Reading the full plan does not expand edit scope or authorize future-task implementation.
 - Keep long build, test, and typecheck output out of orchestrator context after recording the needed verification evidence.
 - Do not silently fall back to direct execution if worker mode becomes unavailable. Stop and escalate to the orchestrator.
+- If a worker reports or reveals that it used another checkout, stop or close it, discard the attempt, and dispatch a fresh worker to retry the original task in the assigned worktree. Do not copy, patch, cherry-pick, recreate, inspect for salvage, or clean up the invalid work.
 
 ## Harness Notes
 

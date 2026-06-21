@@ -2,6 +2,14 @@
 
 You are reviewing code changes for production readiness.
 
+## Assigned Worktree — Mandatory
+
+Review exclusively in: {ASSIGNED_WORKTREE}
+
+Before reading project files or running commands, change to that directory and verify both `pwd` and `git rev-parse --show-toplevel` resolve to the exact assigned path. If either check fails, stop and report `WRONG_WORKTREE`.
+
+Do not inspect project state in, modify, copy from, copy to, clean, or otherwise manipulate any other checkout or worktree.
+
 **Your task:**
 1. Review {WHAT_WAS_IMPLEMENTED}
 2. Compare against {PLAN_OR_REQUIREMENTS}
@@ -23,6 +31,7 @@ You are reviewing code changes for production readiness.
 **Head:** {HEAD_SHA}
 
 ```bash
+cd "{ASSIGNED_WORKTREE}"
 git diff --stat {BASE_SHA}..{HEAD_SHA}
 git diff {BASE_SHA}..{HEAD_SHA}
 ```

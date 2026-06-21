@@ -99,6 +99,18 @@ Before editing code or running plan steps:
 5. Determine whether the user explicitly requested worker mode, explicitly requested direct mode, or did not specify.
 6. Determine whether this harness supports worker orchestration.
 7. Choose a mode using the rules below.
+8. Resolve the canonical absolute assigned worktree with `git rev-parse --show-toplevel`. Treat it as an immutable boundary for the run and verify the current Git top-level still matches it before implementation and before every worker dispatch.
+
+## Worktree Confinement
+
+When this run is assigned a worktree, all repository activity by the orchestrator and its workers is confined to that worktree.
+
+- Do not run repository commands against, read task or recovery state from, modify, copy from, copy to, clean, reset, stash, or otherwise manipulate another checkout or worktree.
+- This prohibition includes salvage by `cp`, `rsync`, patches, cherry-picks, recreating changes from another worktree's diff, or `git -C` targeting another worktree.
+- Put the canonical absolute assigned worktree at the start of every implementer, reviewer, fixer, and parallel-worker prompt. Require the worker to change to it and verify both `pwd` and `git rev-parse --show-toplevel` before reading project files or running task commands.
+- Require every worker handoff to report the verified Git top-level. Reject a handoff that omits it or reports a different path.
+
+If a worker uses another checkout, stop or close it immediately and mark the attempt invalid. Do not inspect, copy, integrate, revert, or clean up its work. Retry the original task with a fresh worker in the assigned worktree. Report possible contamination separately; cleanup requires a separately authorized run assigned to that checkout. If the assigned worktree itself is unusable, stop and ask the user rather than switching worktrees.
 
 ## Mode Selection
 
@@ -119,6 +131,7 @@ Before editing code or running plan steps:
 - Workers must read the coding-standards skill and all applicable `AGENTS.md` before implementation.
 - Workers should read the full plan for background context, sequencing, and shared constraints.
 - Pass the full top-level task text and any additional task-specific context the worker needs.
+- Begin every worker prompt with the assigned worktree and the Worktree Confinement rules. A plain working-directory suggestion is insufficient.
 - The plan may refine `AGENTS.md` within task scope but must not override it.
 - Reading the full plan does not expand edit scope or authorize future-task implementation.
 - Owned files define the primary edit scope. Allowed shared files cover expected cross-task touch points such as shared types, contracts, utilities, and configuration.
@@ -130,9 +143,10 @@ Before editing code or running plan steps:
 - If broader scope expansion is needed and the plan does not already authorize it, stop and escalate to the orchestrator.
 - Stop and escalate to the orchestrator before changing user-visible behavior beyond the task's intent, invalidating task order, adding broad architectural scope, or effectively implementing future-task work.
 - Update the plan file as work progresses: when starting a top-level task, change its checkbox from `[ ]` to `[~]`; when completing it, change `[~]` to `[x]`. If the plan also mirrors tasks in YAML todos, keep their statuses in sync.
-- Require a short worker handoff summary with files changed, shared types or contracts added or modified, commands run, verification results, plan updates made, commit SHA or blocker, and any recommended plan amendment discovered during execution.
+- Require a short worker handoff summary with the verified Git top-level, files changed, shared types or contracts added or modified, commands run, verification results, plan updates made, commit SHA or blocker, and any recommended plan amendment discovered during execution.
 - If the harness supports role-specific review workers, use them only when the plan or local workflow requires them.
 - Do not silently switch to direct mode mid-task. Stop and escalate to the orchestrator if worker execution becomes unavailable.
+- Treat `WRONG_WORKTREE` or any evidence that a worker used another checkout as an invalid attempt: close it and dispatch a fresh worker for the original task. Never salvage the invalid attempt.
 
 ## Direct Mode
 
