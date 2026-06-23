@@ -20,6 +20,26 @@ any other implementation action before approval. This applies regardless of perc
 Small changes still contain assumptions. The design may be only a few sentences,
 but you must present it and get approval before implementation.
 
+## Project Design-Workflow Override
+
+Before offering visual handling (step 2) or creating a UX Brief (step 8), check
+whether the project defines its own design/UX handoff workflow — declared in its
+`AGENTS.md`/`CLAUDE.md` or a `docs/ux-design/` (or similar) workflow document.
+
+If one exists, **defer to it entirely for visual decisions and the design
+handoff**:
+
+- Do **not** offer the visual companion.
+- Do **not** create a `ux-brief.md`-style brief. Produce the project's own handoff
+  artifact in the project's prescribed location and format instead.
+- Follow the project's rules for where visual decisions are made (e.g. an external
+  design tool) rather than making them in this session.
+
+Everything else in this skill is unchanged: project context exploration,
+one-question-at-a-time discovery, approach trade-offs, the engineering
+`…-design.md` spec, the spec-review loop, and the planning transition all still
+apply.
+
 ## Workflow
 
 1. Explore project context.
