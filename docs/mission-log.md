@@ -172,3 +172,91 @@ persistent memory. All six MINIMIZATION.md "harness absorbed it" claims verified
 - Step 4 (model failure modes) complete; findings folded into TDD + verification.
 - Step 3 (harness capabilities) complete — all MINIMIZATION claims verified, skill convergence
   is the headline. Design (step 5) locked as D4–D10.
+- Steps 6–8 executed: all skills rebuilt/added, ASSUMPTIONS.md + self-update, install.sh
+  (verified in sandbox HOME: idempotency, edit-refresh, project mode). Docs refreshed,
+  MEMORY.md deleted. Consistency sweep clean (no stale references; folder==frontmatter names).
+
+---
+
+# Mission summary
+
+**Result:** the rebuild is complete on `fable-powers`. 10 skills + a 78-line operating guide
+(748 lines total core content, down from ~2,250 for 7 skills), an assumptions registry, a
+verified installer for three harnesses, and a self-update mechanism. Every piece of guidance now
+traces to a dated, sourced empirical claim.
+
+## Kept
+
+- **The thesis and the two-layer architecture.** All six "the harness absorbed it" claims in
+  MINIMIZATION.md verified against live official docs; the essence-as-fallback design is exactly
+  right for probabilistic skill auto-triggering (which is now native in all three harnesses).
+- **All 7 skills** — each re-justified by fresh evidence, none on inertia. Sycophancy is the
+  least-improved flaw (receiving-code-review); root-cause discipline remains unautomated
+  (systematic-debugging); understand-first still tops practitioner complaints (brainstorming,
+  research).
+- Project name, MINIMIZATION.md (as marked history), attribution and license.
+
+## Changed
+
+- **Every skill's content.** TDD ported from main's superior version (crown jewels) + new
+  anti-reward-hacking rules; brainstorming rewritten ground-up (it still referenced the dropped
+  visual companion and writing-plans); receiving-code-review 213→69, systematic-debugging
+  296→81, verification 139→60 lines — every decision rule kept, padding and invented statistics
+  cut.
+- **AGENTS.md: +4 essences** (scope, test integrity, context hygiene, model/effort choice) —
+  all driven by measured 2026 failure modes, not taste.
+- **Specs now carry discipline:** finalized specs end with an implementation-guidance tail
+  (TDD/isolation/verify/scope) so agreed working decisions survive compaction and handoffs.
+
+## Reverted (draft decisions overruled)
+
+1. **UPDATE.md "update agent" concept → a dumb, idempotent `install.sh`.** No agent is needed to
+   symlink files and refresh a marked block; deterministic beats model-driven for distribution.
+2. **Main's brainstorming design-pipeline (Claude Design, ux-brief, planning gate, spec
+   diagrams-by-checklist) → not adopted.** Machinery beyond the minimalist thesis; a one-line
+   "Mermaid where it genuinely clarifies" survives.
+3. **MEMORY.md as the session-handoff mechanism → deleted.** The decision log + README carry
+   durable state; the general problem is now the agent-handover skill's job.
+4. **"Verification is the unchanged crown keeper" → reframed.** Anthropic largely trained honest
+   reporting into Claude; the skill stays slim for GPT-5.5 (still overclaims) and because the
+   residual 2026 risk is *gamed* evidence, not forgotten verification.
+
+## Added
+
+- **ASSUMPTIONS.md** — 13 registered claims, each mapping to the guidance it justifies.
+- **self-update skill** — re-runs this mission's research from stored prompt templates, diffs
+  against the registry, proposes changes. The mission became a repeatable procedure.
+- **agent-handover skill** (from main's fresh-agent-handover, reframed for cross-harness
+  usage-limit arbitrage and context rot).
+- **model-selection skill** (personal) — roster table with per-model failure modes, effort
+  calibration (high beats max, measured), plan-high/implement-cheap, escalate-don't-grind.
+- **install.sh** — user-level deployment to all three harnesses on doc-verified paths; sandbox
+  tested.
+- Two dated research notes with per-claim citations in `docs/research/`.
+
+## Strongest disagreement with the draft
+
+The draft treats guidance as durable once written. But its own core claim — "2026 models and
+harnesses have absorbed the 2025 methodology" — is a snapshot that started rotting the day it
+was written, and the draft's five temperament flaws were already yesterday's threat model: the
+2026 failure modes (reward hacking, over-engineering, context rot, effort miscalibration) were
+entirely absent. The rebuild's biggest structural change is making the project *falsifiable*:
+claims are registered, dated, and re-checkable, and staleness is a named failure mode with a
+skill against it. A guidance project for fast-moving models must treat its own decay as a
+first-class design problem — that, not any individual skill, is the real contribution of this
+mission.
+
+## Open questions for Thiemo
+
+1. **Cursor's manual paste step** (no file-based global instructions): acceptable, or drop
+   always-on guidance for Cursor and rely on skills + per-project `install.sh --project`?
+2. **model-selection roster:** the per-model fit table is blog-grade evidence — sanity-check it
+   against your lived experience and actual subscription limits before trusting it.
+3. **TDD default** stays opt-in per work-stream (ask once). Flip to on-by-default for domain
+   logic?
+4. **Personal-label convention** (two marked files) vs a `profile/` split — revisit if the
+   personal layer grows (e.g. Kotlin/AWS standards join coding-standards).
+5. **Claude Code `~/.claude/rules/*.md`** (path-scoped standing rules) could carry
+   coding-standards as glob-attached rules instead of a skill — worth an experiment?
+6. **Publishing:** README assumes clone+install. Is that enough for the open-source audience,
+   or does it need a release/versioning story?
