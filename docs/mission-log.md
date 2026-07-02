@@ -114,9 +114,61 @@ But the draft under-weights the NEW failure modes; the rebuild adds them.
   honest-evidence addition). Every decision rule preserved; padding, worked-transcript examples,
   and duplicate restatements cut.
 
+## Research findings — harness capabilities (step 3)
+
+Full note: `docs/research/2026-07-02-harness-capabilities.md`. Headlines: **all three harnesses
+now implement the agentskills.io SKILL.md standard with description-based auto-triggering** —
+one skills tree can serve all three (Codex+Cursor read `~/.agents/skills/`; Cursor also reads
+`~/.claude/skills/`; frontmatter intersection: `name` (= folder) + `description`). Claude Code
+still does NOT read AGENTS.md (needs `@AGENTS.md` import in CLAUDE.md); Codex honors a global
+`~/.codex/AGENTS.md`; **Cursor has no file-based global instructions** (Settings-UI User Rules
+only). All three have hooks, parallel subagents, worktrees (Codex app only, not CLI), and native
+persistent memory. All six MINIMIZATION.md "harness absorbed it" claims verified.
+
+## Design (step 5) — decisions D4–D10
+
+- **D4 — Two-layer architecture retained, with sharpened rationale.** Native description-based
+  skill auto-triggering weakens the original justification for the AGENTS.md routing pointers —
+  but the failure-modes research shows models still don't reliably self-invoke discipline
+  (plan modes are opt-in; "confidently solving the wrong problem" is still complaint #1). The
+  essence-is-the-fallback design is exactly right for probabilistic triggering. Keep. Essences
+  get new content for the new failure modes (D7).
+- **D5 — Repo shape: single layer, personal-labeled files** (exercising the "collapse if thin"
+  license from the brief). The personal layer is two files — coding-standards (stack-tuned) and
+  the new model-selection skill (roster-specific) — not enough to justify a core/profile split.
+  They get a "personal — swap for your own" header note; README explains the convention.
+- **D6 — Skill set 7 → 10.** All 7 keeps re-justified by research (sycophancy least-improved;
+  root-cause discipline unautomated; understand-first persists). Three additions:
+  `agent-handover` (adopted from main's fresh-agent-handover, reframed: cross-harness handoff
+  for usage-limit arbitrage + the context-rot mitigation the research recommends),
+  `model-selection` (personal; picking harness/model/effort per task is core to the
+  budget-efficiency goal), `self-update` (the re-research mechanism, D9).
+- **D7 — New always-on essences in AGENTS.md:** scope discipline ("build what was asked" —
+  over-engineering is a measured 2026 failure mode), context hygiene (externalize durable state
+  to files; compaction silently drops in-context constraints), test integrity one-liner in the
+  testing essence (reward hacking), model/effort escalation pointer. AGENTS.md stays the
+  canonical always-on file (Codex+Cursor read it natively; Claude Code imports via CLAUDE.md).
+- **D8 — Distribution: `install.sh`, user-level, idempotent.** Per-skill symlinks into
+  `~/.claude/skills/` (Claude Code) and `~/.agents/skills/` (Codex + Cursor). Managed
+  DCP-markered block refreshed in `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`. Cursor global
+  instructions have no file surface → the script prints the block for one-time paste into
+  Settings → User Rules and flags when it changed. Optional `--project <dir>` mode refreshes a
+  checked-in AGENTS.md managed block for repos that want shared guidance. Re-run = update.
+- **D9 — ASSUMPTIONS.md + self-update skill.** Every load-bearing empirical claim behind the
+  guidance goes in a registry: claim → what it justifies → last verified → source. The
+  self-update skill re-runs the two research prompts from this mission (stored as templates in
+  the skill dir), diffs findings against the registry, proposes guidance changes, updates dates.
+  This turns tonight's mission into a repeatable procedure.
+- **D10 — Repo docs:** MEMORY.md deleted (superseded by this log + README). MINIMIZATION.md
+  kept as history with a rebuild addendum. README rewritten. CLAUDE.md updated. Brainstorming
+  rewritten ground-up (it still referenced dropped machinery); adopts the incremental-draft-spec
+  idea from main plus a short "Implementation guidance" tail section in finalized specs
+  (spec-carried discipline survives compaction — direct answer to context rot).
+
 ## Progress
 
 - 2026-07-02 late evening: mission start. Worktree created, log committed.
 - Inventory complete (step 2). Two research agents launched (steps 3–4).
 - Step 4 (model failure modes) complete; findings folded into TDD + verification.
-- Step 3 (harness capabilities) still running; design (step 5) blocked on it.
+- Step 3 (harness capabilities) complete — all MINIMIZATION claims verified, skill convergence
+  is the headline. Design (step 5) locked as D4–D10.
