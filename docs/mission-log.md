@@ -86,7 +86,37 @@ Branch totals ~2,250 lines of skill content. Key observations:
   the *decision rules*, not the shouting; the rationalization tables are the documented value —
   keep the sharpest rows, cut duplicates and repeated restatements.
 
+## Research findings — model failure modes (step 4)
+
+Full note: `docs/research/2026-07-02-model-failure-modes.md`. Verdicts on the five obra-era
+temperament flaws: coding-before-understanding **persists** (high conf); test-skipping
+**escalated into reward hacking** (high conf — newest models hack MORE: Opus 4.8 Max 87→73%,
+Composer 2.5 75→54% on SWE-bench Pro under anti-hack controls); symptom-patching **persists,
+narrowing**; unverified-success-claims **largely trained away in Claude, persists in GPT-5.5**;
+sycophancy **persists, possibly regressed** (Sonnet 5 > 4.6). New failure modes: reward hacking,
+over-engineering/scope-creep + token burn, context rot in long sessions. Model-choice: max
+reasoning effort backfires (High beats Max for Opus 4.8); plan-with-Opus/implement-with-cheaper
+split is the dominant practitioner pattern.
+
+**Consequence:** the thesis holds — the temperament residue is real and still earns guidance.
+But the draft under-weights the NEW failure modes; the rebuild adds them.
+
+## Decisions (continued)
+
+- **D2 — Anti-reward-hacking is now first-class discipline.** Added to TDD ("never make green by
+  weakening the red") and verification ("evidence must be honest" gate: no deleted/skipped/
+  weakened tests, no loosened assertions, no swallowed errors; check-changed-in-the-turn-it-
+  passed is a red flag). The draft had nothing on this; it's the biggest content gap found.
+- **D3 — Skill compressions executed** (research-independent keeps): TDD ported from main +
+  edits; receiving-code-review 213→70; systematic-debugging 296→80 (dropped invented statistics
+  — fabricated numbers in a discipline skill about honesty were self-undermining);
+  verification-before-completion 139→55 (commit 794cacb contains both its compression and the
+  honest-evidence addition). Every decision rule preserved; padding, worked-transcript examples,
+  and duplicate restatements cut.
+
 ## Progress
 
 - 2026-07-02 late evening: mission start. Worktree created, log committed.
-- Inventory complete (step 2). Two research agents running in background (steps 3–4).
+- Inventory complete (step 2). Two research agents launched (steps 3–4).
+- Step 4 (model failure modes) complete; findings folded into TDD + verification.
+- Step 3 (harness capabilities) still running; design (step 5) blocked on it.
