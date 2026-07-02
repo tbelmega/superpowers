@@ -7,7 +7,7 @@ wording/grammar/formatting?
 
 **Method:** `main` = `obra@7e51643` (v5.0.5 merge) + 35 of my commits. Diffing `7e51643..main`
 isolates my changes, free of obra's v5.0.5→v6.1.0 drift. This branch
-(`distinctly-adequate-powers`) is based on obra v6.1.0, so where a skill is unchanged on `main`,
+(`decently-capable-powers`) is based on obra v6.1.0, so where a skill is unchanged on `main`,
 the version already here is fine. "Meaningful" excludes wording/grammar/formatting and mechanical
 compression that preserved meaning — but removed *substance* is flagged, since that's a real
 editorial decision.
